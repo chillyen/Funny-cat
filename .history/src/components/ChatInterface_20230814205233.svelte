@@ -52,7 +52,6 @@
 		}else{
 			sendMessage({ type: 'room-full', content: 'This room is full.' });
 			room.leave();
-			console.log("more than two people");
 		}
 		
 	});

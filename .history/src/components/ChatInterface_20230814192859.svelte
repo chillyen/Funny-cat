@@ -25,7 +25,7 @@
 
 	$roomID = $page.url.pathname;
 
-	console.log("chat begins")
+	// console.log("chat begins")
 
 	const config = { appId: 'pChat-rooms' };
 	let room = joinRoom(config, $roomID);
@@ -51,8 +51,6 @@
 			peerCount++;
 		}else{
 			sendMessage({ type: 'room-full', content: 'This room is full.' });
-			room.leave();
-			console.log("more than two people");
 		}
 		
 	});
@@ -70,9 +68,6 @@
 		pushMessageToMessageLog(newMessage);
 		selfJoined = false;
 		$peerList = $peerList.filter((peer) => peer.id != leaver?.id);
-		// if (peerCount === 0) {
-		// 	room.leave();
-		// }
 	});
 
 	getMessage((data, peerId) => {

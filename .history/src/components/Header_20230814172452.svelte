@@ -6,7 +6,7 @@
 	import { chatMode, exitVoiceChat, joinVoiceChat, roomCreator, micOn } from '$lib/stores/userStore';
 
 	import menuIconUrl from '../svg/hamburger-svgrepo-com.svg?url';
-	import pChatLogo from '../svg/Funny-CAT.svg?url';
+	import pChatLogo from '../svg/pChat.svg?url';
 	import micOnUrl from '../svg/mic_on.svg?url';
 	import micOffUrl from '../svg/mic_off.svg?url';
 

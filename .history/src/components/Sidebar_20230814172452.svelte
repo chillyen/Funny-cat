@@ -38,7 +38,7 @@
 	<div class="bg-surface-800">
 		<div class="border-grey flex w-full flex-col items-center justify-between p-4 text-center">
 			<img src={pChatLogo} class="h-30 mx-auto" alt="menu" />
-			<p>made by chillyen</p>
+			<p>made by shahank</p>
 		</div>
 		<div class="border-grey flex w-full flex-col items-center justify-between border border-b">
 			{#if $chatMode && $roomCreator && !$roomDeleted}
