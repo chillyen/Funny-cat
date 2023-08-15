@@ -65,7 +65,7 @@
 		<a
 			href={$nickname !== '' ? `/chat/${roomGen()}` : '/'}
 			class="btn variant-filled mt-5 w-3/4 md:w-1/2"
-			on:click={createRoom}>Create a Chat Room!</a
+			on:click={createRoom}>Create a pChat Room!</a
 		>
 	{/if}
 </div>
