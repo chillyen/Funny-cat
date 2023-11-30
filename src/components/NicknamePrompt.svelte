@@ -1,15 +1,12 @@
 <script lang="ts">
-	// import type { User } from "../types/types";
-
+	// import type { Profile } from "../types/types";
 	import { goto } from '$app/navigation';
 	import { chatMode, nickname, roomCreator, roomDeleted, roomID } from '$lib/stores/userStore';
-
 
 	export let toJoinRoom: boolean = false;
 	export let toCreateRoom: boolean = false;
 	export let toggleChatInterface: () => void = () => {};
 
-    
 	const generateRoomID = () =>
 		Date.now().toString(26) +
 		Math.floor(Math.pow(10, 12) + Math.random() * 9 * Math.pow(10, 12)).toString(26);
@@ -54,18 +51,14 @@
 			on:keydown={onPromptKeydown}
 		/>
 	</label>
-
-	{#if toJoinRoom}
-		<button class="btn variant-filled mt-5 w-3/4 md:w-1/2" on:click={joinRoom}
-			>Join this Chat Room!</button
-		>
-	{/if}
-
-	{#if toCreateRoom}
-		<a
-			href={$nickname !== '' ? `/chat/${roomGen()}` : '/'}
-			class="btn variant-filled mt-5 w-3/4 md:w-1/2"
-			on:click={createRoom}>Create a Chat Room!</a
-		>
-	{/if}
+	<a
+		href={$nickname !== '' ? `/chat/${roomGen()}` : '/'}
+		class="btn variant-filled mt-5 w-3/4 md:w-1/2"
+		on:click={createRoom}>隨機配對!</a
+	>
+	<!-- {#if toJoinRoom}
+		<button class="btn variant-filled mt-5 w-3/4 md:w-1/2" on:click={joinRoom}>
+			Join this Chat Room!
+		</button>
+	{/if} -->
 </div>
