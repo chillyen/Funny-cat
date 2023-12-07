@@ -3,53 +3,54 @@
 	import {
 		getAuth,
 		signInWithEmailAndPassword,
-		createUserWithEmailAndPassword,
 		sendEmailVerification,
 		type User
 	} from 'firebase/auth';
-	import Alert from '../components/Alert.svelte';
-	import NicknamePrompt from '../components/NicknamePrompt.svelte';
+
+	import { getDatabase, ref, set, onDisconnect, onValue } from 'firebase/database';
+	import { userUid } from '$lib/stores/userStore';
+	import { firebaseConfig } from '../lib/stores/firebaseConfig.js';
+	import { goto } from '$app/navigation';
+	// import Register from '../components/Register.svelte';
+	
 
 	let email = '';
+	let number = '';
 	let password = '';
 	let showToast = false;
 	let isUserLoggedIn = false;
 	let isEmailVerified = false;
-
-	const firebaseConfig = {
-		apiKey: 'AIzaSyCixOgrfafDH8yoAmbA4LOhi4x9PFh_3g4',
-		authDomain: 'funny-cat-f7c67.firebaseapp.com',
-		projectId: 'funny-cat-f7c67',
-		storageBucket: 'funny-cat-f7c67.appspot.com',
-		messagingSenderId: '99505208443',
-		appId: '1:99505208443:web:ff31eabb62b5e5454e36de'
-	};
+	let isRegister = false;
 
 	// 初始化 Firebase
 	const app = initializeApp(firebaseConfig);
 	const auth = getAuth(app);
+	const database = getDatabase(app);
+
+	const isValidNccuEmail = (email: string): boolean => {
+		return email.endsWith('@nccu.edu.tw');
+	};
 
 	const login = async () => {
+		email = number + '@nccu.edu.tw';
+		if (!isValidNccuEmail(email)) {
+			console.error('Please use a valid NCCU email address.');
+			return;
+		}
 		try {
 			const userCredential = await signInWithEmailAndPassword(auth, email, password);
 			console.log('Logged in as:', email);
 			console.log('User UID:', userCredential.user.uid);
 			onLoginSuccess(userCredential.user);
-			return;
+			$userUid = userCredential.user.uid;
 		} catch (error) {
 			console.error('Login error:', error);
 		}
 	};
 
 	const register = async () => {
-		try {
-			const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-			console.log('User created:', userCredential.user);
-			sendVerificationEmail(userCredential.user);
-			verifyemail();
-		} catch (error) {
-			console.error('Registration error:', error);
-		}
+		isRegister = true;
+		goto("/register")
 	};
 
 	const sendVerificationEmail = (user: User) => {
@@ -67,8 +68,23 @@
 		if (!user.emailVerified) {
 			verifyemail();
 		} else {
+			const userStatusRef = ref(database, 'users/' + user.uid);
+			set(userStatusRef, { online: true });
+			onValue(userStatusRef, (snapshot) => {
+				const mystatus = snapshot.val();
+				console.log('Online users:', mystatus);
+				// 處理在線用戶數據...
+			});
+			// 設置當用戶斷開連接時自動更新狀態
+			onDisconnect(userStatusRef).set({ online: false });
 			isUserLoggedIn = true;
 			isEmailVerified = true;
+			if(isUserLoggedIn && isEmailVerified){
+				goto("/home");
+			}
+			else{
+				goto('/')
+			}
 		}
 	};
 
@@ -77,33 +93,28 @@
 		console.log('Please verify your email. Check your inbox for the verification email.');
 	};
 </script>
-
-{#if isUserLoggedIn && isEmailVerified}
-	<NicknamePrompt />
-{:else}
-<Alert {showToast} />
-<div
-	class="container mx-auto flex h-full flex-col items-center justify-center"
-	on:submit|preventDefault={login}
->
-	<label class="label w-3/4 md:w-1/2">
-		<input
-			class="input h-10 w-full p-4"
-			type="text"
-			bind:value={email}
-			placeholder="政大電子郵件"
-		/>
-		<input class="input h-10 w-full p-4" type="password" bind:value={password} placeholder="密碼" />
-	</label>
-	<button
-		class="btn variant-filled align-center mt-3.5 w-3/4 justify-center md:w-1/2"
-		type="submit"
-		on:click={login}>登錄</button
+	<div
+		class="container mx-auto flex h-full flex-col items-center justify-center"
+		on:submit|preventDefault={login}
 	>
-	<button
-		class="btn variant-filled align-center mt-1 w-3/4 justify-center md:w-1/2"
-		type="button"
-		on:click={register}>首次註冊</button
-	>
-</div>
-{/if}
+		<label class="label w-3/4 md:w-1/2">
+			<input class="input h-10 w-full p-4" type="text" bind:value={number} placeholder="政大學號" />
+			<span class="flex items-center pl-2">@nccu.edu.tw</span>
+			<input
+				class="input h-10 w-full p-4"
+				type="password"
+				bind:value={password}
+				placeholder="密碼"
+			/>
+		</label>
+		<button
+			class="btn variant-filled align-center mt-3.5 w-3/4 justify-center md:w-1/2"
+			type="submit"
+			on:click={login}>登錄</button
+		>
+		<button
+			class=" align-center mt-2 w-3/4 justify-center md:w-1/2"
+			type="button"
+			on:click={register}>首次註冊</button
+		>
+	</div>

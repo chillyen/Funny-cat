@@ -8,15 +8,11 @@
 		type User
 	} from 'firebase/auth';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import Alert from './Alert.svelte';
 
 	let email = '';
 	let password = '';
 	let showToast = false;
-    
-
-	
 
 	const firebaseConfig = {
 		apiKey: 'AIzaSyCixOgrfafDH8yoAmbA4LOhi4x9PFh_3g4',
@@ -35,9 +31,9 @@
 		try {
 			const userCredential = await signInWithEmailAndPassword(auth, email, password);
 			console.log('Logged in as:', email);
-            console.log('User UID:', userCredential.user.uid);
+			console.log('User UID:', userCredential.user.uid);
 			onLoginSuccess(userCredential.user);
-            return
+			return;
 		} catch (error) {
 			console.error('Login error:', error);
 		}
@@ -48,7 +44,7 @@
 			const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 			console.log('User created:', userCredential.user);
 			sendVerificationEmail(userCredential.user);
-            verifyemail();
+			verifyemail();
 		} catch (error) {
 			console.error('Registration error:', error);
 		}
@@ -58,7 +54,7 @@
 		sendEmailVerification(user)
 			.then(() => {
 				console.log('Verification email sent.');
-                showToast = true;
+				showToast = true;
 			})
 			.catch((error) => {
 				console.error('Error sending verification email:', error);
@@ -67,9 +63,9 @@
 
 	const onLoginSuccess = (user: User) => {
 		if (!user.emailVerified) {
-            verifyemail();
+			verifyemail();
 		} else {
-			goto('/')
+			goto('/');
 		}
 	};
 
@@ -77,8 +73,8 @@
 		showToast = true;
 		console.log('Please verify your email. Check your inbox for the verification email.');
 	};
-	
 </script>
+
 <Alert showToast />
 <div
 	class="container mx-auto flex h-full flex-col items-center justify-center"
@@ -102,5 +98,5 @@
 		class="btn variant-filled align-center mt-1 w-3/4 justify-center md:w-1/2"
 		type="button"
 		on:click={register}>首次註冊</button
-	> 
+	>
 </div>

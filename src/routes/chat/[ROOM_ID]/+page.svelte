@@ -1,22 +1,22 @@
 <script lang="ts">
 	import NicknamePrompt from '../../../components/NicknamePrompt.svelte';
 	import ChatInterface from '../../../components/ChatInterface.svelte';
-	import { nickname } from '$lib/stores/userStore';
-	let showChatInterface: boolean = $nickname !== '';
-	let messageScrollNode: HTMLElement;
-	const toggleChatInterface = () => {
-		showChatInterface = true;
-	};
-
+	import { nickname, userUid } from '$lib/stores/userStore';
+	import { goto } from '$app/navigation';
 	
+	let showChatInterface: boolean = $nickname !== '';
+	let showPass:boolean = $userUid ! =='';
+	let messageScrollNode: HTMLElement;
+	// const toggleChatInterface = () => {
+	// 	showChatInterface = true;
+	// 	showPass = true;
+	// 	goto('/');
+	// };
+
 </script>
 
 <main class="no-scrollbar flex flex-1 flex-col overflow-y-scroll">
-	{#if !showChatInterface}
-		<NicknamePrompt toJoinRoom {toggleChatInterface} />
-	{/if}
-
-	{#if showChatInterface}
+	{#if showChatInterface }
 		<ChatInterface {messageScrollNode} />
 	{/if}
 </main>

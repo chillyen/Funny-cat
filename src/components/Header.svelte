@@ -3,10 +3,16 @@
 
 	import { drawerStore } from '@skeletonlabs/skeleton';
 	import { goto } from '$app/navigation';
-	import { chatMode, exitVoiceChat, joinVoiceChat, roomCreator, micOn } from '$lib/stores/userStore';
+	import {
+		chatMode,
+		exitVoiceChat,
+		joinVoiceChat,
+		roomCreator,
+		micOn
+	} from '$lib/stores/userStore';
 
 	import menuIconUrl from '../svg/hamburger-svgrepo-com.svg?url';
-	import pChatLogo from '../svg/Funny-CAT.svg?url';
+	import pChatLogo from '../svg/cat_logo.jpg?url';
 	import micOnUrl from '../svg/mic_on.svg?url';
 	import micOffUrl from '../svg/mic_off.svg?url';
 
@@ -19,29 +25,33 @@
 		padding: 'p-4',
 		rounded: 'rounded-xl'
 	};
-
 </script>
 
 <header
-	class="border-grey flex w-full flex-row items-center justify-between border-b p-4 text-center"
+	class="border-grey flex w-full flex-row items-center justify-between border-b p-1 text-center"
 >
 	<button
 		class="btn"
 		on:click={() => {
 			$chatMode = false;
 			$roomCreator = '';
-			goto('/');
+			if(!$chatMode){
+				goto('/')
+			}else{
+				goto('/home');
+				console.log($chatMode);
+			}
 		}}
 	>
-		<img src={pChatLogo} class="mx-auto h-10" alt="menu" />
+		<img src={pChatLogo} class="logo" alt="menu" />
 	</button>
 
 	{#if $chatMode}
 		<div class="flex gap-7">
 			<button
-				class={`btn  ${!$micOn ? "variant-filled-tertiary" : "bg-green-500"}`}
+				class={`btn  ${!$micOn ? 'variant-filled-tertiary' : 'bg-green-500'}`}
 				on:click={() => {
-					console.log($micOn)
+					console.log($micOn);
 					if (!$micOn) {
 						$joinVoiceChat();
 						$micOn = true;
@@ -64,3 +74,13 @@
 		</div>
 	{/if}
 </header>
+
+<style>
+	.logo {
+		height: 60px; /* This is the height you had as 'h-10'. You may need to adjust this based on your requirements */
+		width: 60px; /* Make sure the width is the same as the height to create a circle */
+		border-radius: 50%; /* This makes the image round */
+		object-fit: cover; /* This will ensure that the image covers the space without being distorted */
+		display: block; /* To center the image with mx-auto, image should be a block or inline-block */
+	}
+</style>
