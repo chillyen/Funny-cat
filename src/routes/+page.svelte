@@ -7,13 +7,12 @@
 		type User
 	} from 'firebase/auth';
 
-	import { getDatabase, ref, set, onDisconnect, onValue } from 'firebase/database';
+	import { getDatabase, ref, update, set, onDisconnect, onValue } from 'firebase/database';
 	import { userUid } from '$lib/stores/userStore';
 	import { firebaseConfig } from '../lib/stores/firebaseConfig.js';
 	import { goto } from '$app/navigation';
 	// import Register from '../components/Register.svelte';
 	
-
 	let email = '';
 	let number = '';
 	let password = '';
@@ -69,14 +68,14 @@
 			verifyemail();
 		} else {
 			const userStatusRef = ref(database, 'users/' + user.uid);
-			set(userStatusRef, { online: true });
+			update(userStatusRef, { online: true });
 			onValue(userStatusRef, (snapshot) => {
 				const mystatus = snapshot.val();
 				console.log('Online users:', mystatus);
 				// 處理在線用戶數據...
 			});
 			// 設置當用戶斷開連接時自動更新狀態
-			onDisconnect(userStatusRef).set({ online: false });
+			onDisconnect(userStatusRef).update({ online: false });
 			isUserLoggedIn = true;
 			isEmailVerified = true;
 			if(isUserLoggedIn && isEmailVerified){
@@ -98,17 +97,17 @@
 		on:submit|preventDefault={login}
 	>
 		<label class="label w-3/4 md:w-1/2">
-			<input class="input h-10 w-full p-4" type="text" bind:value={number} placeholder="政大學號" />
+			<input class="input h-10 w-full p-3" type="text" bind:value={number} placeholder="政大學號" />
 			<span class="flex items-center pl-2">@nccu.edu.tw</span>
 			<input
-				class="input h-10 w-full p-4"
+				class="input h-10 w-full p-3"
 				type="password"
 				bind:value={password}
 				placeholder="密碼"
 			/>
 		</label>
 		<button
-			class="btn variant-filled align-center mt-3.5 w-3/4 justify-center md:w-1/2"
+			class="btn variant-filled align-center mt-3 w-3/4 justify-center md:w-1/2"
 			type="submit"
 			on:click={login}>登錄</button
 		>

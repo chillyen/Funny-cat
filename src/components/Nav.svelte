@@ -31,7 +31,7 @@
 				$currentComponent = 'card';
 			}}
 		>
-			<img src={cardIcon} class="mx-auto h-7" alt="card" />
+			<img src={cardIcon} class="mx-auto h-7 " alt="card" />
 			{#if $currentComponent === 'card'}<div class="circle"></div>{/if}
 		</button>
 		<button
@@ -71,7 +71,7 @@
 		align-items: center;
 		padding: 7px;
 		background-color: white; /* Change this to match your UI */
-		border-top: 7px solid rgb(137, 137, 137);; /* Light grey border */
+		border-top: 7px solid rgb(137, 137, 137); /* Light grey border */
 		position: fixed;
 		bottom: 0px;
 		left: 50%; /* Center the navigation bar horizontally */

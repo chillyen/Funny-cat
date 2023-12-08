@@ -19,7 +19,6 @@
 
 <style>
 	.avatar-container {
-		
 		width: 100%; /* Or set a specific width */
 		height: 100%; /* Or set a specific height */
 		border-bottom-left-radius: 40px;
@@ -29,7 +28,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background-image: url("https://i.pinimg.com/736x/78/ff/b4/78ffb4997606cf06d3658e648d7c351d.jpg");
+		background-image: url("https://i.pinimg.com/originals/45/43/ec/4543ec95f9cc6741aa2613d084bd3c71.jpg");
 	}
 
 	.welcome-text {

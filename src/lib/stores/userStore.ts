@@ -2,6 +2,7 @@ import { writable, type Writable } from 'svelte/store';
 import type { Profile } from '../../types/types';
 
 export const currentComponent:Writable<string> = writable('');
+export const sex: Writable<string> = writable('');
 export const quote:Writable<string> = writable('');
 export const nickname: Writable<string> = writable('');
 export const major: Writable<string> = writable('');
@@ -14,4 +15,3 @@ export const peerList: Writable<Profile[]> = writable([]);
 export const joinVoiceChat: Writable<() => void> = writable();
 export const exitVoiceChat: Writable<() => void> = writable();
 export const micOn: Writable<boolean> = writable(false);
-

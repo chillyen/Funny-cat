@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { initializeApp } from 'firebase/app';
+	import { getDatabase, ref, set } from 'firebase/database';
 	import {
 		getAuth,
 		createUserWithEmailAndPassword,
@@ -16,6 +17,8 @@
 	let number = '';
 	let password = '';
 	let passwordcorrect = '';
+	let name = '';
+	let nccuMajor = '';
 	let showToast = false;
 	let isPasswordIn = false;
 	let accountExists = false;
@@ -23,6 +26,7 @@
 	// 初始化 Firebase
 	const app = initializeApp(firebaseConfig);
 	const auth = getAuth(app);
+	const database = getDatabase(app);
 
 	const goBack = () => {
 		goto('/');
@@ -36,7 +40,17 @@
 		email = number + '@nccu.edu.tw';
 		try {
 			const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+			const user = userCredential.user;
+			// 寫入用戶資料到 Realtime Database
+			set(ref(database, 'users/' + user.uid), {
+				nickname: name,
+				major: nccuMajor,
+				online: false
+				// 可以添加更多欄位
+			});
 			sendVerificationEmail(userCredential.user);
+			$nickname = name;
+			$major = nccuMajor;
 			goto('/');
 		} catch (error) {
 			if (error instanceof Error && 'code' in error) {
@@ -65,24 +79,24 @@
 <button class="back-button" on:click={goBack}>
 	<img src={goBackIcon} class="back-btn" alt="Back" />
 </button>
-<div
+<form
 	class="container mx-auto flex h-full flex-col items-center justify-center"
 	on:submit|preventDefault={register}
 >
 	<label class="label w-3/4 md:w-1/2">
 		<span class="mt-3 flex items-center pl-2">匿名名稱：</span>
-		<input class="input h-10 w-full p-5" type="text" bind:value={$nickname} />
+		<input class="input h-10 w-full p-3" type="text" bind:value={name} />
 		<span class="mt-3 flex items-center pl-2">政大學號：</span>
-		<input class="input h-10 w-full p-5" type="text" bind:value={number} />
+		<input class="input h-10 w-full p-3" type="text" bind:value={number} />
 		<span class="mt-3 flex items-center pl-2">政大系級：</span>
-		<input class="input h-10 w-full p-5" type="text" bind:value={$major} />
+		<input class="input h-10 w-full p-3" type="text" bind:value={nccuMajor} />
 		<span class="mt-3 flex items-center pl-2">密碼設置：</span>
-		<input class="input h-10 w-full p-5" type="password" bind:value={password} />
+		<input class="input h-10 w-full p-3" type="password" bind:value={password} />
 		<span class="mt-3 flex items-center pl-2">密碼確認：</span>
-		<input class="input h-10 w-full p-5" type="password" bind:value={passwordcorrect} />
+		<input class="input h-10 w-full p-3" type="password" bind:value={passwordcorrect} />
 	</label>
 	<button
-		class="btn variant-filled align-center mt-5 w-3/4 justify-center md:w-1/3"
+		class="btn variant-filled align-center mt-3 w-3/4 justify-center md:w-1/3"
 		type="button"
 		on:click={register}>註冊</button
 	>
@@ -92,13 +106,13 @@
 	{#if accountExists}
 		<div class="mt-2 flex items-center pl-2 text-red-500">此帳號已經建立過</div>
 	{/if}
-</div>
+</form>
 
 <style>
 	.back-button {
 		width: 45px;
 		height: 45px;
-        margin: 3%;
+		margin: 3%;
 	}
 	.back-btn {
 		border-radius: 50%;

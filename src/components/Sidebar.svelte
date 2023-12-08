@@ -3,7 +3,6 @@
 	// import type { User } from '../types/types';
 
 	import { drawerStore, modalStore } from '@skeletonlabs/skeleton';
-
 	import { chatMode, roomCreator, roomDeleted, roomID, peerList } from '$lib/stores/userStore';
 	import pChatLogo from '../svg/Funny-CAT.svg?url';
 	import type { Profile } from '../types/types';
