@@ -7,6 +7,7 @@ export const quote:Writable<string> = writable('');
 export const nickname: Writable<string> = writable('');
 export const major: Writable<string> = writable('');
 export const chatMode: Writable<boolean> = writable(false);
+export const isLoading: Writable<boolean> = writable(false);
 export const userUid: Writable<string> = writable('');
 export const roomCreator: Writable<string> = writable('');
 export const roomDeleted: Writable<boolean> = writable(false);

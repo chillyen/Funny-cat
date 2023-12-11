@@ -26,16 +26,16 @@
 	const auth = getAuth(app);
 	const database = getDatabase(app);
 
-	const isValidNccuEmail = (email: string): boolean => {
-		return email.endsWith('@nccu.edu.tw');
-	};
+	// const isValidNccuEmail = (email: string): boolean => {
+	// 	return email.endsWith('@nccu.edu.tw');
+	// };
 
 	const login = async () => {
-		email = number + '@nccu.edu.tw';
-		if (!isValidNccuEmail(email)) {
-			console.error('Please use a valid NCCU email address.');
-			return;
-		}
+		// email = number + '@nccu.edu.tw';
+		// if (!isValidNccuEmail(email)) {
+		// 	console.error('Please use a valid NCCU email address.');
+		// 	return;
+		// }
 		try {
 			const userCredential = await signInWithEmailAndPassword(auth, email, password);
 			console.log('Logged in as:', email);
@@ -97,7 +97,7 @@
 		on:submit|preventDefault={login}
 	>
 		<label class="label w-3/4 md:w-1/2">
-			<input class="input h-10 w-full p-3" type="text" bind:value={number} placeholder="政大學號" />
+			<input class="input h-10 w-full p-3" type="text" bind:value={email} placeholder="政大學號" />
 			<span class="flex items-center pl-2">@nccu.edu.tw</span>
 			<input
 				class="input h-10 w-full p-3"

@@ -37,7 +37,7 @@
 			return; // 不继续执行注册逻辑
 		}
 		isPasswordIn = false;
-		email = number + '@nccu.edu.tw';
+		// email = number + '@nccu.edu.tw';
 		try {
 			const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 			const user = userCredential.user;
@@ -87,7 +87,7 @@
 		<span class="mt-3 flex items-center pl-2">匿名名稱：</span>
 		<input class="input h-10 w-full p-3" type="text" bind:value={name} />
 		<span class="mt-3 flex items-center pl-2">政大學號：</span>
-		<input class="input h-10 w-full p-3" type="text" bind:value={number} />
+		<input class="input h-10 w-full p-3" type="text" bind:value={email} />
 		<span class="mt-3 flex items-center pl-2">政大系級：</span>
 		<input class="input h-10 w-full p-3" type="text" bind:value={nccuMajor} />
 		<span class="mt-3 flex items-center pl-2">密碼設置：</span>
