@@ -28,10 +28,21 @@
 			await update(waitingRoomRef, {
 				name: $nickname,
 				seeking: $sex,
-				joinedAt: Date.now()
+				joinedAt: Date.now(),
+				matched: false
 			});
+			// setupMatchListener();
 			findMatchAndCreateRoom();
-			console.log($roomID);
+			onValue(waitingRoomRef, (snapshot) => {
+				if (snapshot.exists()) {
+					const userData = snapshot.val();
+					if (userData.matched && userData.roomID) {
+						// 如果匹配成功，重定向到聊天室
+						$chatMode = true;
+						goto(`/chat/${userData.roomID}`);
+					}
+				}
+			});
 		} else {
 			console.log('用戶昵稱為空或未登入');
 		}
@@ -42,24 +53,54 @@
 		const snapshot = await get(waitingRoomRef);
 		if (snapshot.exists()) {
 			let users = snapshot.val();
-
 			// 示例匹配邏輯: 只是一個基本的示例，您需要根據您的需求來定制
 			let userKeys = Object.keys(users);
-			let matchedUsers = userKeys.slice(0, 2); // 假設選取前兩個用戶進行匹配
-
-			if (matchedUsers.length === 2) {
-				let user1 = users[matchedUsers[0]];
-				let user2 = users[matchedUsers[1]];
-				let roomID = roomGen(); // 使用您已經定義的 roomGen 函數
-				const chatRoomRef = ref(database, 'chatRooms/' + roomID);
-				await update(chatRoomRef, { user1, user2 }); // 在聊天室中添加用戶信息
-				// 移除用戶
-				await remove(ref(database, 'waitingRoom/' + matchedUsers[0]));
-				await remove(ref(database, 'waitingRoom/' + matchedUsers[1]));
-				$chatMode = true;
-				goto($nickname !== '' ? `/chat/${roomID}` : '/');
-			}
+			// 假設選取前兩個用戶進行匹配
+			userKeys.forEach(async (key) => {
+				let user = users[key];
+				if (user.seeking === '女' && !user.matched) {
+					//只要創建過roomID的人就不會消失
+					if (!user.roomID) {
+						let roomID = roomGen();
+						await update(ref(database, 'waitingRoom/' + key), { matched: false, roomID });
+					}
+				} else if (user.seeking === '男' && !user.matched) {
+					// 为寻找男性的用户寻找已经创建了 roomID 的女性用户
+					let maleUsers = userKeys.filter(
+						(k) => users[k].seeking === '女' && users[k].roomID && !users[k].matched
+					);
+					if (maleUsers.length > 0) {
+						let randommaleUserKey = maleUsers[Math.floor(Math.random() * maleUsers.length)];
+						let maleUser = users[randommaleUserKey];
+						await update(ref(database, 'waitingRoom/' + key), {
+							matched: true,
+							roomID: maleUser.roomID
+						});
+						const chatRoomRef = ref(database, 'chatRooms/' + maleUser.roomID);
+						// 创建聊天室并添加两个用户
+						await update(chatRoomRef, { user1: maleUser, user2: user });
+						// 更新男性用户为匹配状态
+						await update(ref(database, 'waitingRoom/' + randommaleUserKey), { matched: true });
+					}
+				}
+			});
 		}
+	};
+
+	const setupMatchListener = () => {
+		const userRef = ref(database, 'waitingRoom/' + $userUid);
+		onValue(userRef, (snapshot) => {
+			if (snapshot.exists()) {
+				const userData = snapshot.val();
+				if (userData.matched && userData.roomID) {
+					// User is matched and should be redirected to the chat room
+					$chatMode = true;
+					goto(`/chat/${userData.roomID}`);
+					// 移除用戶
+					remove(userRef);
+				}
+			}
+		});
 	};
 
 	const connected_ID = () =>
