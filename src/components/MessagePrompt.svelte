@@ -4,6 +4,7 @@
 	import { nickname, roomDeleted } from '$lib/stores/userStore';
 
 	import sendIconUrl from '../svg/send-svgrepo-com.svg?url';
+	import fileIconUrl from '../svg/file.png?url';
 	import type { ActionSender } from 'trystero';
 
 	export let sendMessageAction: ActionSender<unknown>;
@@ -11,6 +12,7 @@
 
 	let currentMessage: string = '';
 	let textAreaRef: HTMLElement;
+	let isComposing = false;
 
 	const sendMessage = () => {
 		if (currentMessage != '') {
@@ -29,19 +31,39 @@
 		}
 	};
 
+	const onButtonClick = () => {
+		//離開聊天室
+		$roomDeleted = true;
+		console.log($roomDeleted);
+	};
+
+	// const handleFileUpload = (event: Event) => {
+	// 	const input = event.target as HTMLInputElement;
+	// 	if (input.files && input.files[0]) {
+	// 		const file = input.files[0];
+
+	// 		// 在这里处理文件上传逻辑
+	// 		console.log('Uploading file:', file.name);
+
+	// 		// 例如，您可以添加代码将文件发送到服务器
+	// 	}
+	// };
+
 	const onPromptKeydown = (event: KeyboardEvent): void => {
-		if (['Enter'].includes(event.code)) {
+		if (['Enter'].includes(event.code) && !isComposing) {
 			event.preventDefault();
 			sendMessage();
 		}
 	};
 </script>
 
-<div class="border-grey border-t bg-surface-500/30 p-4">
+<div class="border-grey bg-surface-500/30 row flex border-t p-4">
+	<button class="variant-filled-primary btn_leave w-12" on:click={onButtonClick}>
+		<img src={fileIconUrl} class="photo w-8" alt="Send" />
+		<!-- <input type="file" id="fileInput" hidden on:change={handleFileUpload} accept="image/*" /> -->
+	</button>
 	{#if $roomDeleted}
-		<div class="input-group-divider input-group grid-cols-[1fr_auto] rounded-container-token">
-			<!-- <button class="input-group-shim">+</button> -->
-
+		<div class="input-group-divider input-group rounded-container-token grid-cols-[1fr_auto]">
 			<textarea
 				class="resize-none border-0 bg-transparent p-3 pl-6 ring-0"
 				name="prompt"
@@ -58,13 +80,13 @@
 	{/if}
 
 	{#if !$roomDeleted}
-		<div class="input-group-divider input-group grid-cols-[1fr_auto] rounded-container-token">
-			<!-- <button class="input-group-shim">+</button> -->
-
+		<div class="input-group-divider input-group rounded-container-token grid-cols-[1fr_auto]">
 			<textarea
 				bind:this={textAreaRef}
 				bind:value={currentMessage}
 				on:keydown={onPromptKeydown}
+				on:compositionstart={() => (isComposing = true)}
+				on:compositionend={() => (isComposing = false)}
 				class="resize-none border-0 bg-transparent p-3 pl-6 ring-0"
 				name="prompt"
 				id="prompt"
@@ -78,3 +100,15 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	.btn_leave {
+		border-radius: 50px;
+		margin-right: 5px;
+		margin-left: -7px;
+	}
+	.photo {
+		margin-left: 5px;
+		height: 30px;
+	}
+</style>

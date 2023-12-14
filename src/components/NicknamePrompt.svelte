@@ -76,11 +76,9 @@
 							matched: true,
 							roomID: maleUser.roomID
 						});
+						await update(ref(database, 'waitingRoom/' + randommaleUserKey), { matched: true });// 更新男性為匹配狀態
 						const chatRoomRef = ref(database, 'chatRooms/' + maleUser.roomID);
-						// 创建聊天室并添加两个用户
-						await update(chatRoomRef, { user1: maleUser, user2: user });
-						// 更新男性用户为匹配状态
-						await update(ref(database, 'waitingRoom/' + randommaleUserKey), { matched: true });
+						await update(chatRoomRef, { user1: maleUser, user2: user });// 建立聊天室新增兩個用戶						
 					}
 				}
 			});

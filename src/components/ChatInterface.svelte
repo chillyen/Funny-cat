@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Message, PageData, Profile } from '../types/types';
-
 	import { joinRoom, selfId } from 'trystero';
 	import { afterUpdate } from 'svelte';
 	import MessageFeed from './MessageFeed.svelte';
@@ -54,7 +53,6 @@
 			room.leave();
 			console.log("more than two people");
 		}
-		
 	});
 
 	room.onPeerLeave((peerId) => {

@@ -14,7 +14,7 @@
 	{#if $roomDeleted}
 		<div class="card">
 			<header class="card-header text-3xl">
-				<h1>This pChat room has been destroyed.</h1>
+				<h1>This room has been destroyed.</h1>
 			</header>
 
 			<section class="p-4">
