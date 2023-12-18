@@ -33,20 +33,18 @@
 	};
 	const register = async () => {
 		if (password !== passwordcorrect) {
-			isPasswordIn = true; // 显示密码错误信息
-			return; // 不继续执行注册逻辑
+			isPasswordIn = true; // 顯示密碼錯誤訊息
+			return; // 不繼續執行密碼錯誤邏輯
 		}
 		isPasswordIn = false;
 		// email = number + '@nccu.edu.tw';
 		try {
 			const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 			const user = userCredential.user;
-			// 寫入用戶資料到 Realtime Database
 			set(ref(database, 'users/' + user.uid), {
 				nickname: name,
 				major: nccuMajor,
 				online: false
-				// 可以添加更多欄位
 			});
 			sendVerificationEmail(userCredential.user);
 			$nickname = name;
@@ -67,11 +65,12 @@
 	const sendVerificationEmail = (user: User) => {
 		sendEmailVerification(user)
 			.then(() => {
-				console.log('Verification email sent.');
+				alert('驗證信件已寄出');
 				showToast = true;
 			})
 			.catch((error) => {
 				console.error('Error sending verification email:', error);
+				alert('寄送錯誤!');
 			});
 	};
 </script>
@@ -101,10 +100,10 @@
 		on:click={register}>註冊</button
 	>
 	{#if isPasswordIn}
-		<div class="mt-2 flex items-center pl-2 text-red-500">密碼輸入不相同</div>
+		<div class="mt-2 flex items-center pl-2 text-red-500">密碼輸入不相同!</div>
 	{/if}
 	{#if accountExists}
-		<div class="mt-2 flex items-center pl-2 text-red-500">此帳號已經建立過</div>
+		<div class="mt-2 flex items-center pl-2 text-red-500">此帳號已經建立過!</div>
 	{/if}
 </form>
 

@@ -44,6 +44,9 @@
 			$userUid = userCredential.user.uid;
 		} catch (error) {
 			console.error('Login error:', error);
+			alert('學號或密碼錯誤');
+			email='';
+			password='';
 		}
 	};
 
@@ -89,7 +92,7 @@
 
 	const verifyemail = () => {
 		showToast = true;
-		console.log('Please verify your email. Check your inbox for the verification email.');
+		alert('請驗證您的電子郵件or檢查您的收件匣中是否有驗證電子郵件!');
 	};
 </script>
 	<div

@@ -3,6 +3,7 @@ import type { Profile } from '../../types/types';
 
 export const currentComponent:Writable<string> = writable('');
 export const sex: Writable<string> = writable('');
+export const mySex: Writable<string> = writable('');
 export const quote:Writable<string> = writable('');
 export const nickname: Writable<string> = writable('');
 export const major: Writable<string> = writable('');

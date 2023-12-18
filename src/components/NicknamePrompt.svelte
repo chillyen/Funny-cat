@@ -2,7 +2,15 @@
 	// import type { Profile } from "../types/types";
 	import { getAuth, type User } from 'firebase/auth';
 	import { goto } from '$app/navigation';
-	import { sex, userUid, chatMode, nickname, isLoading, roomID } from '$lib/stores/userStore';
+	import {
+		mySex,
+		sex,
+		userUid,
+		chatMode,
+		nickname,
+		isLoading, 
+		roomID
+	} from '$lib/stores/userStore';
 	import { firebaseConfig } from '../lib/stores/firebaseConfig.js';
 	import { getDatabase, ref, update, remove, get, set, onValue } from 'firebase/database';
 	import { initializeApp } from 'firebase/app';
@@ -11,15 +19,15 @@
 	const app = initializeApp(firebaseConfig);
 	const auth = getAuth(app);
 	const database = getDatabase(app);
-
 	$isLoading = false;
+	let selectedSex = '';//我的性別
 
 	export let toJoinRoom: boolean = false;
 	export let toCreateRoom: boolean = false;
 	export let toggleChatInterface: () => void = () => {};
 
 	const waitingRoom = async () => {
-		if ($nickname !== '' && $userUid) {
+		if ($nickname !== '' && $userUid && selectedSex!=='') {
 			$isLoading = true;
 			console.log($isLoading);
 			// 確保昵稱非空且用戶已獲得 UID
@@ -27,6 +35,7 @@
 			// 將當前用戶添加到等待區
 			await update(waitingRoomRef, {
 				name: $nickname,
+				mySex: selectedSex,
 				seeking: $sex,
 				joinedAt: Date.now(),
 				matched: false
@@ -44,7 +53,7 @@
 				}
 			});
 		} else {
-			console.log('用戶昵稱為空或未登入');
+			alert('用戶昵稱性別為空或未登入');
 		}
 	};
 
@@ -76,9 +85,9 @@
 							matched: true,
 							roomID: maleUser.roomID
 						});
-						await update(ref(database, 'waitingRoom/' + randommaleUserKey), { matched: true });// 更新男性為匹配狀態
+						await update(ref(database, 'waitingRoom/' + randommaleUserKey), { matched: true }); // 更新男性為匹配狀態
 						const chatRoomRef = ref(database, 'chatRooms/' + maleUser.roomID);
-						await update(chatRoomRef, { user1: maleUser, user2: user });// 建立聊天室新增兩個用戶						
+						await update(chatRoomRef, { user1: maleUser, user2: user }); // 建立聊天室新增兩個用戶
 					}
 				}
 			});
@@ -138,6 +147,15 @@
 				bind:value={$nickname}
 				on:keydown={onPromptKeydown}
 			/>
+		</label>
+		<label class="label h-16 w-3/4 md:w-1/2">
+			<span>我的性別:</span>
+			<div class="flex items-center">
+				<input type="radio" bind:group={selectedSex} value="男" class="mr-2" />
+				<span class="mr-4">男</span>
+				<input type="radio" bind:group={selectedSex} value="女" class="mr-2" />
+				<span>女</span>
+			</div> 
 		</label>
 		<label class="label h-16 w-3/4 md:w-1/2">
 			<span>尋找性別:</span>
