@@ -7,6 +7,7 @@
 	import {
 		nickname,
 		roomID,
+		roomDeleted,
 		peerList,
 		joinVoiceChat,
 		exitVoiceChat,
@@ -20,11 +21,10 @@
 
 	let showChatInterface: boolean = $nickname !== '';
 	let messages: Message[] = [];
-	
 
 	$roomID = $page.url.pathname;
 
-	console.log("chat begins")
+	console.log('chat begins');
 
 	const config = { appId: 'pChat-rooms' };
 	let room = joinRoom(config, $roomID);
@@ -44,14 +44,14 @@
 	};
 
 	room.onPeerJoin((peerId) => {
-		if (peerCount < 2){
+		if (peerCount < 2) {
 			sendProfile(profile, peerId);
 			selfJoined = true;
 			peerCount++;
-		}else{
+		} else {
 			sendMessage({ type: 'room-full', content: 'This room is full.' });
 			room.leave();
-			console.log("more than two people");
+			console.log('more than two people');
 		}
 	});
 
@@ -148,7 +148,7 @@
 
 <div
 	bind:this={messageScrollNode}
-	class="flex-1 overflow-y-scroll bg-surface-500/30 px-1 py-2 md:px-4 md:py-4"
+	class="bg-surface-500/30 flex-1 overflow-y-scroll px-1 py-2 md:px-4 md:py-4"
 >
 	<MessageFeed {messages} />
 </div>

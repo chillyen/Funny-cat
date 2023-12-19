@@ -8,7 +8,7 @@
 	} from 'firebase/auth';
 
 	import { getDatabase, ref, update, set, onDisconnect, onValue } from 'firebase/database';
-	import { userUid } from '$lib/stores/userStore';
+	import { userUid} from '$lib/stores/userStore';
 	import { firebaseConfig } from '../lib/stores/firebaseConfig.js';
 	import { goto } from '$app/navigation';
 	// import Register from '../components/Register.svelte';
@@ -92,7 +92,7 @@
 
 	const verifyemail = () => {
 		showToast = true;
-		alert('請驗證您的電子郵件or檢查您的收件匣中是否有驗證電子郵件!');
+		alert('請驗證您的電子郵件!');
 	};
 </script>
 	<div

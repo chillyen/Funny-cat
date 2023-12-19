@@ -9,7 +9,8 @@
 		chatMode,
 		nickname,
 		isLoading, 
-		roomID
+		roomID,
+		name
 	} from '$lib/stores/userStore';
 	import { firebaseConfig } from '../lib/stores/firebaseConfig.js';
 	import { getDatabase, ref, update, remove, get, set, onValue } from 'firebase/database';
@@ -25,6 +26,7 @@
 	export let toJoinRoom: boolean = false;
 	export let toCreateRoom: boolean = false;
 	export let toggleChatInterface: () => void = () => {};
+	$nickname = $name;
 
 	const waitingRoom = async () => {
 		if ($nickname !== '' && $userUid && selectedSex!=='') {
@@ -42,18 +44,19 @@
 			});
 			// setupMatchListener();
 			findMatchAndCreateRoom();
-			onValue(waitingRoomRef, (snapshot) => {
+			onValue(waitingRoomRef, async(snapshot) => {
 				if (snapshot.exists()) {
 					const userData = snapshot.val();
 					if (userData.matched && userData.roomID) {
 						// 如果匹配成功，重定向到聊天室
+						await remove(waitingRoomRef);
 						$chatMode = true;
 						goto(`/chat/${userData.roomID}`);
 					}
 				}
 			});
 		} else {
-			alert('用戶昵稱性別為空或未登入');
+			alert('檢查是否有空格');
 		}
 	};
 

@@ -1,51 +1,157 @@
 <script lang="ts">
-	import wallpaper from '../svg/Gojou sensei.jpg?url';
 	import edit from '../svg/edit.svg?url';
-	import { quote, userUid } from '$lib/stores/userStore';
+	import { initializeApp } from 'firebase/app';
+	import { getAuth } from 'firebase/auth';
+	import { getDatabase, ref, update, set, onValue } from 'firebase/database';
+	import { firebaseConfig } from '../lib/stores/firebaseConfig.js';
+	import { quote, userUid, name, major, tonight, grade, mySex } from '$lib/stores/userStore';
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	// 初始化 Firebase
+	const app = initializeApp(firebaseConfig);
+	const auth = getAuth(app);
+	const database = getDatabase(app);
+
+	onMount(() => {
+		if (auth.currentUser) {
+			fetchUserData(auth.currentUser.uid);
+			$userUid = auth.currentUser.uid;
+		} else {
+			alert('用戶未登錄');
+			goto('/');
+		}
+	});
+
+	async function fetchUserData(userId: string) {
+		const userRef = ref(database, 'users/' + userId);
+		onValue(userRef, (snapshot) => {
+			const data = snapshot.val();
+			$name = data.nickname;
+			$quote = data.quote || '在這裡設置您的名言';
+			$major = data.major;
+			// 加載其他用戶數據，如性別等
+		});
+	}
+
+	async function updateQuote(newQuote: string) {
+		const userUidValue = $userUid; // 获取存储中的 userUid
+		// await set(ref(database, 'users/' + userUidValue + '/quote'), newQuote);
+	}
+
+	const editProfile = () => {
+		console.log("按下按鈕")
+	};
 </script>
 
-<div class="profile-container mx-auto flex h-full items-center justify-center">
-	<div class="avatar-container flex h-full flex-col">
-		<div class="welcome-text">WELCOME, LISA</div>
-		<div class="quote">
-			Hair style is the final tip off whether or not a woman really knows herself.
-		</div>
-		<button class="next-button ">
-			<!-- Icon image or use a font icon library like Font Awesome -->
-			<img src={edit} alt="Next" />
-		</button>
+<section class="w-full flex-1 flex-col items-center space-y-3 px-5">
+	<div class="card flex items-center justify-center">
+		<header class="card-header flex text-2xl">
+			<h1>歡迎, {$name} 👋🏻</h1>
+		</header>
 	</div>
-</div>
+
+	<section class="text-size1 px-4.5 w-full flex-1 items-center space-y-1">
+		<span class=" flex items-center pl-2">關於我🤙：</span>
+		<div class="card card-quote flex">
+			<div class="quote-text">
+				<h3>{$quote}</h3>
+			</div>
+		</div>
+	</section>
+
+	<section class="text-size px-4.5 w-full flex-1 items-center space-y-1">
+		<span class=" flex items-center pl-2">個人ID🪪：</span>
+		<div class="card card-quote flex justify-center">
+			<div class="quote-text">
+				<h3>
+					{$userUid}
+				</h3>
+			</div>
+		</div>
+	</section>
+
+	<section class="text-size px-4.5 w-full flex-1 items-center space-y-1">
+		<span class=" flex items-center pl-2">系級🎓：</span>
+		<div class="card card-quote flex">
+			<div class="quote-text">
+				<h3>
+					{$major}
+				</h3>
+			</div>
+		</div>
+	</section>
+
+	<section class="text-size px-4.5 w-full flex-1 items-center space-y-3">
+		<span class=" flex items-center pl-2">我的標籤🏷️：</span>
+		<div class="card card-quote flex">
+			<div class="quote-text flex">
+				<select class="input input-width ml-1 h-10 w-full" bind:value={$grade}>
+					<option value="bachelor">大學🏫</option>
+					<option value="master">碩班🏛️</option>
+					<option value="phd">博士🏟️</option>
+				</select>
+				<select class="input input-width ml-1.5 h-10 w-full" bind:value={$tonight}>
+					<option value="bad">單身可壞壞😈</option>
+					<option value="couple">死會不缺愛💔</option>
+					<option value="chat">單身可 +賴💬</option>
+				</select>
+			</div>
+		</div>
+	</section>
+	<section class="text-size px-4.5 w-full justify-center items-center space-y-3">
+		<button class="next-button flex-1" on:click={editProfile}>
+			<img src={edit} alt="Edit" />
+		</button>
+	</section>
+</section>
 
 <style>
-	.avatar-container {
-		width: 100%; /* Or set a specific width */
-		height: 100%; /* Or set a specific height */
-		border-bottom-left-radius: 40px;
-		border-bottom-right-radius: 40px;
-		background-size: cover;
-		background-position: center;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background-image: url("https://i.pinimg.com/originals/45/43/ec/4543ec95f9cc6741aa2613d084bd3c71.jpg");
+	section {
+		max-height: 77vh;
+		overflow-y: auto;
 	}
 
-	.welcome-text {
-		align-items: center;
-		justify-content: center;
-		font-size: 24px; /* Adjust the size as needed */
-		font-weight: bold;
-		margin-bottom: 25px;
-		color: #ffffff;
+	.input-width {
+		width: auto;
+		max-width: 100%;
+	}
+	.text-size {
+		font-size: 18px;
+		margin-top: -5px;
+	}
+	.text-size1 {
+		font-size: 18px;
+	}
+	.card-header {
+		display: flex; /* 啟用 Flexbox */
+		justify-content: center; /* 水平居中 */
+		align-items: center; /* 垂直居中 */
+		margin-bottom: 15px;
 	}
 
-	.quote {
+	.card {
+		margin-left: 25px;
+		margin-right: 25px;
+		margin-top: 20px;
+	}
+
+	.quote-text {
+		margin-left: 3px;
+		margin-right: 3px;
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+
+	.card-quote {
 		font-size: 16px; /* Adjust the size as needed */
 		color: #dddddd;
 		margin-bottom: 24px;
+		margin-left: 0px;
+		margin-right: 0px;
+		margin-top: 10px;
 		text-align: center;
 		padding: 0 20px; /* Adds padding on both sides */
+		/* margin-top: -10%; */
 	}
 
 	.next-button {

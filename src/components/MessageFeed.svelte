@@ -2,7 +2,7 @@
 	import type { Message } from '../types/types';
 	import MessageBubbleOther from './MessageBubbles/MessageBubbleOther.svelte';
 	import MessageBubbleSender from './MessageBubbles/MessageBubbleSender.svelte';
-	import { nickname, roomDeleted, chatMode } from '$lib/stores/userStore';
+	import { nickname, roomDeleted, chatMode, leaveMode } from '$lib/stores/userStore';
 	import StatusBubble from './StatusBubble.svelte';
 	import score5 from '../svg/emoji/1.png?url';
 	import score4 from '../svg/emoji/2.png?url';
@@ -22,7 +22,7 @@
 		showConfirmExitButton = false;
 	};
 	const cancel = () => {
-		$roomDeleted = false;
+		$leaveMode = false;
 		showConfirmExitButton = true;
 		leave = false;
 		headerText = '是否離開聊天室 ?';
@@ -33,13 +33,14 @@
 		if(score>0){
 			goto('/home');
 			$chatMode = false;
-			$roomDeleted = false;
+			$leaveMode = false;
+			$roomDeleted = true;
 		}
 	};
 </script>
 
 <section class="w-full flex-1 items-center space-y-3 px-4">
-	{#if $roomDeleted}
+	{#if $leaveMode}
 		<div class="card flex flex-col items-center justify-center">
 			<header class="card-header text-3xl">
 				<h1>{headerText}</h1>
@@ -78,7 +79,7 @@
 		</div>
 	{/if}
 
-	{#if !$roomDeleted}
+	{#if !$leaveMode}
 		{#each messages as message}
 			{#if message.type === 'status-joined' || message.type === 'status-left'}
 				<StatusBubble {message} />
