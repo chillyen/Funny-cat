@@ -4,9 +4,10 @@
 	import { getAuth } from 'firebase/auth';
 	import { getDatabase, ref, update, set, onValue } from 'firebase/database';
 	import { firebaseConfig } from '../lib/stores/firebaseConfig.js';
-	import { quote, userUid, name, major, tonight, grade, mySex } from '$lib/stores/userStore';
+	import { quote, userUid, name, major, tonight, grade, mySex, email } from '$lib/stores/userStore';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+
 	// 初始化 Firebase
 	const app = initializeApp(firebaseConfig);
 	const auth = getAuth(app);
@@ -27,78 +28,89 @@
 		onValue(userRef, (snapshot) => {
 			const data = snapshot.val();
 			$name = data.nickname;
-			$quote = data.quote || '在這裡設置您的名言';
+			$quote = data.quote || '在這裡設置您的自介';
 			$major = data.major;
+			$grade = data.grade;
+			$mySex = data.mySex;
+			$tonight = data.tonight;
+			$email = data.email;
 			// 加載其他用戶數據，如性別等
 		});
 	}
 
-	async function updateQuote(newQuote: string) {
-		const userUidValue = $userUid; // 获取存储中的 userUid
-		// await set(ref(database, 'users/' + userUidValue + '/quote'), newQuote);
-	}
-
-	const editProfile = () => {
-		console.log("按下按鈕")
+	const editProfile = async () => {
+		const userUidValue = $userUid; // 获取存储中的用户UID
+		const userData = {
+			quote: $quote,
+			major: $major,
+			grade: $grade,
+			mySex: $mySex,
+			tonight: $tonight
+		};
+		try {
+			await update(ref(database, 'users/' + userUidValue), userData);
+			alert('更新成功');
+		} catch (error) {
+			console.error('更新数据时发生错误:', error);
+		}
 	};
 </script>
 
 <section class="w-full flex-1 flex-col items-center space-y-3 px-5">
 	<div class="card flex items-center justify-center">
 		<header class="card-header flex text-2xl">
-			<h1>歡迎, {$name} 👋🏻</h1>
+			<h1>🥳 歡迎, {$name} 👋🏻</h1>
 		</header>
 	</div>
 
-	<section class="text-size1 px-4.5 w-full flex-1 items-center space-y-1">
+	<label class="label w-1/8 h-20 md:w-1/2">
 		<span class=" flex items-center pl-2">關於我🤙：</span>
-		<div class="card card-quote flex">
-			<div class="quote-text">
-				<h3>{$quote}</h3>
-			</div>
-		</div>
-	</section>
+		<input class="input h-10 w-full p-4" type="text" bind:value={$quote} />
+	</label>
 
-	<section class="text-size px-4.5 w-full flex-1 items-center space-y-1">
+	<label class="label w-1/8 h-20 md:w-1/2">
 		<span class=" flex items-center pl-2">個人ID🪪：</span>
-		<div class="card card-quote flex justify-center">
-			<div class="quote-text">
-				<h3>
-					{$userUid}
-				</h3>
-			</div>
-		</div>
-	</section>
+		<input class="input h-10 w-full p-4" type="text" bind:value={$userUid} disabled />
+	</label>
 
-	<section class="text-size px-4.5 w-full flex-1 items-center space-y-1">
+	<label class="label w-1/8 h-20 md:w-1/2">
+		<span class=" flex items-center pl-2">Email📧：</span>
+		<input class="input h-10 w-full p-4" type="text" bind:value={$email} disabled />
+	</label>
+
+	<label class="label w-1/8 h-20 md:w-1/2">
 		<span class=" flex items-center pl-2">系級🎓：</span>
-		<div class="card card-quote flex">
-			<div class="quote-text">
-				<h3>
-					{$major}
-				</h3>
-			</div>
+		<input class="input h-10 w-full p-4" type="text" bind:value={$major} />
+	</label>
+
+	<label class="label w-1/8 h-20 md:w-1/2">
+		<span class=" flex items-center pl-2">性別🎓：</span>
+		<div class="mysex flex items-center">
+			<input type="radio" bind:group={$mySex} value="男" class="mr-2" />
+			<span class="mr-4">男♂️</span>
+			<input type="radio" bind:group={$mySex} value="女" class="mr-2" />
+			<span>女♀️</span>
 		</div>
-	</section>
+	</label>
 
 	<section class="text-size px-4.5 w-full flex-1 items-center space-y-3">
 		<span class=" flex items-center pl-2">我的標籤🏷️：</span>
 		<div class="card card-quote flex">
 			<div class="quote-text flex">
 				<select class="input input-width ml-1 h-10 w-full" bind:value={$grade}>
-					<option value="bachelor">大學🏫</option>
-					<option value="master">碩班🏛️</option>
-					<option value="phd">博士🏟️</option>
+					<option value="bachelor">大學 🏫</option>
+					<option value="master">碩班 🏛️</option>
+					<option value="phd">博士 🏟️</option>
 				</select>
-				<select class="input input-width ml-1.5 h-10 w-full" bind:value={$tonight}>
-					<option value="bad">單身可壞壞😈</option>
-					<option value="couple">死會不缺愛💔</option>
-					<option value="chat">單身可 +賴💬</option>
+				<select class="input input-width ml-1 h-10 w-full" bind:value={$tonight}>
+					<option value="bad">單身可壞壞 😈</option>
+					<option value="couple">死會不缺愛 💔</option>
+					<option value="chat">單身可 +賴 💬</option>
 				</select>
 			</div>
 		</div>
 	</section>
-	<section class="text-size px-4.5 w-full justify-center items-center space-y-3">
+	<section class="flex-1 items-center justify-center">
 		<button class="next-button flex-1" on:click={editProfile}>
 			<img src={edit} alt="Edit" />
 		</button>
@@ -115,13 +127,16 @@
 		width: auto;
 		max-width: 100%;
 	}
+
+	.mysex {
+		margin-left: 10px;
+	}
+
 	.text-size {
 		font-size: 18px;
 		margin-top: -5px;
 	}
-	.text-size1 {
-		font-size: 18px;
-	}
+
 	.card-header {
 		display: flex; /* 啟用 Flexbox */
 		justify-content: center; /* 水平居中 */
@@ -132,7 +147,7 @@
 	.card {
 		margin-left: 25px;
 		margin-right: 25px;
-		margin-top: 20px;
+		margin-top: 30px;
 	}
 
 	.quote-text {

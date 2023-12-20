@@ -44,6 +44,7 @@
 			set(ref(database, 'users/' + user.uid), {
 				nickname: name,
 				major: nccuMajor,
+				email: email,
 				online: false
 			});
 			sendVerificationEmail(userCredential.user);
@@ -79,7 +80,7 @@
 	<img src={goBackIcon} class="back-btn" alt="Back" />
 </button>
 <form
-	class="container mx-auto flex h-full flex-col items-center justify-center"
+	class="container mx-auto flex flex-col items-center justify-center register"
 	on:submit|preventDefault={register}
 >
 	<label class="label w-3/4 md:w-1/2">
@@ -115,5 +116,8 @@
 	}
 	.back-btn {
 		border-radius: 50%;
+	}
+	.register{
+		margin-top: 5%;
 	}
 </style>

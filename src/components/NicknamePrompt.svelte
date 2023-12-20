@@ -8,7 +8,7 @@
 		userUid,
 		chatMode,
 		nickname,
-		isLoading, 
+		isLoading,
 		roomID,
 		name
 	} from '$lib/stores/userStore';
@@ -21,7 +21,7 @@
 	const auth = getAuth(app);
 	const database = getDatabase(app);
 	$isLoading = false;
-	let selectedSex = '';//我的性別
+	let selectedSex = ''; //我的性別
 
 	export let toJoinRoom: boolean = false;
 	export let toCreateRoom: boolean = false;
@@ -29,7 +29,7 @@
 	$nickname = $name;
 
 	const waitingRoom = async () => {
-		if ($nickname !== '' && $userUid && selectedSex!=='') {
+		if ($nickname !== '' && $userUid && $mySex !== '') {
 			$isLoading = true;
 			console.log($isLoading);
 			// 確保昵稱非空且用戶已獲得 UID
@@ -44,7 +44,7 @@
 			});
 			// setupMatchListener();
 			findMatchAndCreateRoom();
-			onValue(waitingRoomRef, async(snapshot) => {
+			onValue(waitingRoomRef, async (snapshot) => {
 				if (snapshot.exists()) {
 					const userData = snapshot.val();
 					if (userData.matched && userData.roomID) {
@@ -55,6 +55,8 @@
 					}
 				}
 			});
+		} else if ($mySex == '') {
+			alert('檢查是否有加入自己的性別');
 		} else {
 			alert('檢查是否有空格');
 		}
@@ -141,7 +143,7 @@
 {#if $isLoading}
 	<Loading />
 {:else}
-	<div class="container mx-auto flex h-full flex-col items-center justify-center">
+	<div class="top container mx-auto flex flex-col items-center justify-center">
 		<label class="label h-20 w-3/4 md:w-1/2">
 			<span>匿名名字:</span>
 			<input
@@ -150,15 +152,6 @@
 				bind:value={$nickname}
 				on:keydown={onPromptKeydown}
 			/>
-		</label>
-		<label class="label h-16 w-3/4 md:w-1/2">
-			<span>我的性別:</span>
-			<div class="flex items-center">
-				<input type="radio" bind:group={selectedSex} value="男" class="mr-2" />
-				<span class="mr-4">男</span>
-				<input type="radio" bind:group={selectedSex} value="女" class="mr-2" />
-				<span>女</span>
-			</div> 
 		</label>
 		<label class="label h-16 w-3/4 md:w-1/2">
 			<span>尋找性別:</span>
@@ -171,7 +164,7 @@
 		<button
 			class="btn variant-filled align-center mt-5 w-3/4 justify-center md:w-1/2"
 			type="submit"
-			on:click={waitingRoom}>隨機配對</button
+			on:click={waitingRoom}>隨機配對 💞</button
 		>
 	</div>
 {/if}
@@ -182,3 +175,9 @@
 		on:click={waitingRoom}>隨機配對!</a
 		goto($nickname !== '' ? `/chat/${roomGen()}` : '/');
 	> -->
+
+<style>
+	.top {
+		margin-top: 60%;
+	}
+</style>
