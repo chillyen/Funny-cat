@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Message } from '../types/types';
-	import { nickname, roomDeleted } from '$lib/stores/userStore';
+	import { leaveMode, nickname, roomDeleted } from '$lib/stores/userStore';
 	import sendIconUrl from '../svg/send-svgrepo-com.svg?url';
 	import ExitIconUrl from '../svg/exit.png';
 	import type { ActionSender } from 'trystero';
@@ -32,6 +32,7 @@
 	const onButtonClick = () => {
 		//離開聊天室
 		$roomDeleted = true;
+		$leaveMode = true;
 	};
 	// const handleFileUpload = (event: Event) => {
 	// 	const input = event.target as HTMLInputElement;

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import edit from '../svg/edit.svg?url';
+	import edit from '../svg/save.png?url';
 	import { initializeApp } from 'firebase/app';
 	import { getAuth } from 'firebase/auth';
-	import { getDatabase, ref, update, set, onValue } from 'firebase/database';
+	import { getDatabase, ref, update, onValue } from 'firebase/database';
 	import { firebaseConfig } from '../lib/stores/firebaseConfig.js';
 	import { quote, userUid, name, major, tonight, grade, mySex, email } from '$lib/stores/userStore';
 	import { onMount } from 'svelte';
@@ -28,27 +28,33 @@
 		onValue(userRef, (snapshot) => {
 			const data = snapshot.val();
 			$name = data.nickname;
-			$quote = data.quote || '在這裡設置您的自介';
-			$major = data.major;
-			$grade = data.grade;
-			$mySex = data.mySex;
-			$tonight = data.tonight;
 			$email = data.email;
-			// 加載其他用戶數據，如性別等
+			// 加載用戶資料
+		});
+		const userPublicRef = ref(database, 'users/' + userId + '/publicProfile');
+		onValue(userPublicRef, (snapshot) => {
+			const publicdata = snapshot.val();
+			$quote = publicdata.quote || '在這裡設置您的自介';
+			$major = publicdata.major;
+			$grade = publicdata.grade;
+			$mySex = publicdata.mySex;
+			$tonight = publicdata.tonight;
+			// 加載用戶公共資料
 		});
 	}
 
 	const editProfile = async () => {
-		const userUidValue = $userUid; // 获取存储中的用户UID
-		const userData = {
+		const userUidValue = $userUid; // 用戶自己的Uid
+		const publicProfileData = {
 			quote: $quote,
 			major: $major,
 			grade: $grade,
 			mySex: $mySex,
 			tonight: $tonight
 		};
+
 		try {
-			await update(ref(database, 'users/' + userUidValue), userData);
+			await update(ref(database, 'users/' + userUidValue + '/publicProfile'), publicProfileData);
 			alert('更新成功');
 		} catch (error) {
 			console.error('更新数据时发生错误:', error);
@@ -119,7 +125,6 @@
 
 <style>
 	section {
-		max-height: 77vh;
 		overflow-y: auto;
 	}
 
@@ -134,20 +139,21 @@
 
 	.text-size {
 		font-size: 18px;
-		margin-top: -5px;
+		margin-top: -20%;
+		margin-bottom: -20px;
 	}
 
 	.card-header {
 		display: flex; /* 啟用 Flexbox */
 		justify-content: center; /* 水平居中 */
 		align-items: center; /* 垂直居中 */
-		margin-bottom: 15px;
+		margin-bottom: 8px;
 	}
 
 	.card {
 		margin-left: 25px;
 		margin-right: 25px;
-		margin-top: 30px;
+		margin-top: 20px;
 	}
 
 	.quote-text {
@@ -170,17 +176,15 @@
 	}
 
 	.next-button {
-		width: 60px; /* Adjust the size as needed */
-		height: 60px;
+		width: 50px; /* Adjust the size as needed */
+		height: 50px;
 		border-radius: 50%; /* Makes the div round */
 		background: #fff; /* Background color for the circle */
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		margin-bottom: 5%;
+		margin-left: 3%;
 	}
 
-	.next-button img {
-		width: 30px; /* Adjust as needed */
-		height: auto;
-	}
 </style>

@@ -72,11 +72,11 @@
 		} else {
 			const userStatusRef = ref(database, 'users/' + user.uid);
 			update(userStatusRef, { online: true });
-			onValue(userStatusRef, (snapshot) => {
-				const mystatus = snapshot.val();
-				console.log('Online users:', mystatus);
-				// 處理在線用戶數據...
-			});
+			// onValue(userStatusRef, (snapshot) => {
+			// 	const mystatus = snapshot.val();
+			// 	console.log('Online users:', mystatus);
+			// 	// 處理在線用戶數據...
+			// });
 			// 設置當用戶斷開連接時自動更新狀態
 			onDisconnect(userStatusRef).update({ online: false });
 			isUserLoggedIn = true;

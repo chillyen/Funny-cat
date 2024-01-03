@@ -2,7 +2,7 @@
 	import type { Message } from '../types/types';
 	import MessageBubbleOther from './MessageBubbles/MessageBubbleOther.svelte';
 	import MessageBubbleSender from './MessageBubbles/MessageBubbleSender.svelte';
-	import { nickname, roomDeleted, chatMode, leaveMode } from '$lib/stores/userStore';
+	import { nickname, roomDeleted, chatMode, leaveMode, peerList } from '$lib/stores/userStore';
 	import StatusBubble from './StatusBubble.svelte';
 	import score5 from '../svg/emoji/1.png?url';
 	import score4 from '../svg/emoji/2.png?url';
@@ -23,6 +23,7 @@
 	};
 	const cancel = () => {
 		$leaveMode = false;
+		$roomDeleted = false;
 		showConfirmExitButton = true;
 		leave = false;
 		headerText = '是否離開聊天室 ?';
@@ -31,10 +32,11 @@
 	const handleScoreClick = (score: number) => {
 		console.log(`Selected score: ${score}`);
 		if(score>0){
+			$peerList = [];
 			goto('/home');
 			$chatMode = false;
 			$leaveMode = false;
-			$roomDeleted = true;
+			$roomDeleted = false;
 		}
 	};
 </script>

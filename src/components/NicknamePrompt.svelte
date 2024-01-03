@@ -21,7 +21,6 @@
 	const auth = getAuth(app);
 	const database = getDatabase(app);
 	$isLoading = false;
-	let selectedSex = ''; //我的性別
 
 	export let toJoinRoom: boolean = false;
 	export let toCreateRoom: boolean = false;
@@ -37,10 +36,11 @@
 			// 將當前用戶添加到等待區
 			await update(waitingRoomRef, {
 				name: $nickname,
-				mySex: selectedSex,
+				mySex: $mySex,
 				seeking: $sex,
 				joinedAt: Date.now(),
-				matched: false
+				matched: false,
+				id:$userUid
 			});
 			// setupMatchListener();
 			findMatchAndCreateRoom();
@@ -51,6 +51,8 @@
 						// 如果匹配成功，重定向到聊天室
 						await remove(waitingRoomRef);
 						$chatMode = true;
+						$roomID = userData.roomID;
+						console.log($roomID);
 						goto(`/chat/${userData.roomID}`);
 					}
 				}
@@ -178,6 +180,6 @@
 
 <style>
 	.top {
-		margin-top: 60%;
+		margin-top: 50%;
 	}
 </style>

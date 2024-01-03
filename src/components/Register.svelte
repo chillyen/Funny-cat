@@ -43,9 +43,13 @@
 			const user = userCredential.user;
 			set(ref(database, 'users/' + user.uid), {
 				nickname: name,
-				major: nccuMajor,
 				email: email,
 				online: false
+			});
+
+			// 同时更新 publicProfile 节点
+			set(ref(database, 'users/' + user.uid + '/publicProfile'), {
+				major: nccuMajor // 公开的专业信息
 			});
 			sendVerificationEmail(userCredential.user);
 			$nickname = name;
@@ -80,7 +84,7 @@
 	<img src={goBackIcon} class="back-btn" alt="Back" />
 </button>
 <form
-	class="container mx-auto flex flex-col items-center justify-center register"
+	class="register container mx-auto flex flex-col items-center justify-center"
 	on:submit|preventDefault={register}
 >
 	<label class="label w-3/4 md:w-1/2">
@@ -117,7 +121,7 @@
 	.back-btn {
 		border-radius: 50%;
 	}
-	.register{
+	.register {
 		margin-top: 5%;
 	}
 </style>

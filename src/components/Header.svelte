@@ -77,8 +77,8 @@
 
 <style>
 	.logo {
-		height: 55px; /* This is the height you had as 'h-10'. You may need to adjust this based on your requirements */
-		width: 55px; /* Make sure the width is the same as the height to create a circle */
+		height: 45px; /* This is the height you had as 'h-10'. You may need to adjust this based on your requirements */
+		width: 45px; /* Make sure the width is the same as the height to create a circle */
 		border-radius: 50%; /* This makes the image round */
 		object-fit: cover; /* This will ensure that the image covers the space without being distorted */
 		display: block; /* To center the image with mx-auto, image should be a block or inline-block */
