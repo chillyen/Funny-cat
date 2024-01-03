@@ -92,12 +92,12 @@
 		box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* subtle shadow on the top */
 		z-index: 1000;
 		border-radius: 25px 0px 0px 25px;
-		transition: transform 0.7s ease, width 0.5s ease; /* 添加平滑过渡效果 */
+		transition: transform 0.4s ease, width 0.35s ease; /* 添加平滑过渡效果 */
 	}
 
 	.scroll-icon img.rotated {
         transform: rotate(-180deg); /* 旋转 180 度 */
-        transition: transform 0.7s ease; /* 平滑过渡效果 */
+        transition: transform 0.4s ease; /* 平滑过渡效果 */
     }
 
 
