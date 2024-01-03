@@ -5,7 +5,7 @@
 	import { getDatabase, ref, update, onValue } from 'firebase/database';
 	import { firebaseConfig } from '../lib/stores/firebaseConfig.js';
 	import { quote, userUid, name, major, tonight, grade, mySex, email } from '$lib/stores/userStore';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
 
 	// 初始化 Firebase
@@ -21,7 +21,21 @@
 			alert('用戶未登錄');
 			goto('/');
 		}
+		const handleScroll = () => {
+			hideAddressBar();
+		};
+
+		window.addEventListener('scroll', handleScroll);
+
+		return () => {
+			// 清理函数，在组件销毁时移除事件监听器
+			window.removeEventListener('scroll', handleScroll);
+		};
 	});
+
+	function hideAddressBar() {
+		window.scrollTo(0, 1);
+	}
 
 	async function fetchUserData(userId: string) {
 		const userRef = ref(database, 'users/' + userId);
@@ -186,5 +200,4 @@
 		margin-bottom: 5%;
 		margin-left: 3%;
 	}
-
 </style>
