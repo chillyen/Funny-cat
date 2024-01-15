@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { isLoading, userUid } from '../lib/stores/userStore';
+	import { isLoading, userUid, NavState } from '../lib/stores/userStore';
 	import { firebaseConfig } from '../lib/stores/firebaseConfig.js';
 	import { getDatabase, ref, update, remove, get, set, onValue } from 'firebase/database';
 	import { initializeApp } from 'firebase/app';
@@ -8,6 +8,7 @@
 	const database = getDatabase(app);
 
 	const back = async () => {
+		$NavState = true;
 		$isLoading = false;
 		console.log($isLoading);
 		const userId = $userUid; 

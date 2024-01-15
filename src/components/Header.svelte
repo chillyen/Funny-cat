@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { DrawerSettings } from '@skeletonlabs/skeleton';
-
 	import { drawerStore } from '@skeletonlabs/skeleton';
 	import { goto } from '$app/navigation';
 	import {
@@ -10,7 +9,6 @@
 		roomCreator,
 		micOn
 	} from '$lib/stores/userStore';
-
 	import menuIconUrl from '../svg/hamburger-svgrepo-com.svg?url';
 	import pChatLogo from '../svg/cat_logo.jpg?url';
 	import micOnUrl from '../svg/mic_on.svg?url';

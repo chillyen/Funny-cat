@@ -1,5 +1,5 @@
 <script lang="ts">
-	import edit from '../svg/save.png?url';
+	// import edit from '../svg/save.png?url';
 	import { initializeApp } from 'firebase/app';
 	import { getAuth } from 'firebase/auth';
 	import { getDatabase, ref, update, onValue } from 'firebase/database';
@@ -52,10 +52,9 @@
 			mySex: $mySex,
 			tonight: $tonight
 		};
-
 		try {
 			await update(ref(database, 'users/' + userUidValue + '/publicProfile'), publicProfileData);
-			alert('更新成功');
+			alert('修改成功');
 		} catch (error) {
 			console.error('更新数据时发生错误:', error);
 		}
@@ -90,7 +89,7 @@
 	</label>
 
 	<label class="label w-1/8 h-20 md:w-1/2">
-		<span class=" flex items-center pl-2">性別🎓：</span>
+		<span class=" flex items-center pl-2">性別♂️|♀️：</span>
 		<div class="mysex flex items-center">
 			<input type="radio" bind:group={$mySex} value="男" class="mr-2" />
 			<span class="mr-4">男♂️</span>
@@ -116,9 +115,10 @@
 			</div>
 		</div>
 	</section>
-	<section class="flex-1 items-center justify-center">
-		<button class="next-button flex-1" on:click={editProfile}>
-			<img src={edit} alt="Edit" />
+	<section class="flex-1 flex-h items-center justify-center">
+		<button class="btn variant-filled align-center mt-3 w-1/3 justify-center md:w-1/2 mb-5" on:click={editProfile}>
+			<!-- <img src={edit} alt="Edit" /> -->
+			<span class="text-below-image">儲存✒️</span>
 		</button>
 	</section>
 </section>
@@ -173,17 +173,5 @@
 		text-align: center;
 		padding: 0 20px; /* Adds padding on both sides */
 		/* margin-top: -10%; */
-	}
-
-	.next-button {
-		width: 50px; /* Adjust the size as needed */
-		height: 50px;
-		border-radius: 50%; /* Makes the div round */
-		background: #fff; /* Background color for the circle */
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		margin-bottom: 5%;
-		margin-left: 3%;
 	}
 </style>

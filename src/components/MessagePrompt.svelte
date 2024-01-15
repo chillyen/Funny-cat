@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Message } from '../types/types';
-	import { leaveMode, nickname, roomDeleted } from '$lib/stores/userStore';
+	import { leaveMode, nickname, otherLeave, roomDeleted } from '$lib/stores/userStore';
 	import sendIconUrl from '../svg/send-svgrepo-com.svg?url';
 	import ExitIconUrl from '../svg/exit.png';
 	import type { ActionSender } from 'trystero';
@@ -34,6 +34,11 @@
 		$roomDeleted = true;
 		$leaveMode = true;
 	};
+
+	// if(!$otherLeave){
+	// 	$roomDeleted = true;
+	// }
+
 	// const handleFileUpload = (event: Event) => {
 	// 	const input = event.target as HTMLInputElement;
 	// 	if (input.files && input.files[0]) {
@@ -52,6 +57,7 @@
 			sendMessage();
 		}
 	};
+	
 </script>
 
 <div class="border-grey bg-surface-500/30 row flex border-t p-4">

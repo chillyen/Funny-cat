@@ -6,7 +6,6 @@
 		sendEmailVerification,
 		type User
 	} from 'firebase/auth';
-
 	import { getDatabase, ref, update, set, onDisconnect, onValue } from 'firebase/database';
 	import { userUid} from '$lib/stores/userStore';
 	import { firebaseConfig } from '../lib/stores/firebaseConfig.js';
@@ -95,10 +94,11 @@
 		alert('請驗證您的電子郵件!');
 	};
 </script>
-	<div
+	<section
 		class="container mx-auto flex h-full flex-col items-center justify-center"
 		on:submit|preventDefault={login}
 	>
+		<span class="mb-2 flex items-center text-2xl">歡迎回來👋</span>
 		<label class="label w-3/4 md:w-1/2">
 			<input class="input h-10 w-full p-3" type="text" bind:value={email} placeholder="政大學號" />
 			<span class="flex items-center pl-2">@nccu.edu.tw</span>
@@ -112,11 +112,17 @@
 		<button
 			class="btn variant-filled align-center mt-3 w-3/4 justify-center md:w-1/2"
 			type="submit"
-			on:click={login}>登錄</button
+			on:click={login}>登入💓</button
 		>
 		<button
 			class=" align-center mt-2 w-3/4 justify-center md:w-1/2"
 			type="button"
-			on:click={register}>首次註冊</button
+			on:click={register}>首次註冊📧</button
 		>
-	</div>
+	</section>
+
+	<style>
+		section {
+			overflow-y: auto;
+		}
+	</style>

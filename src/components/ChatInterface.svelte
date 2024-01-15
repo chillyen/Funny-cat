@@ -7,7 +7,7 @@
 	import {
 		nickname,
 		roomID,
-		roomDeleted,
+		otherLeave,
 		peerList,
 		joinVoiceChat,
 		exitVoiceChat,
@@ -26,7 +26,7 @@
 
 	console.log('chat begins');
 
-	const config = { appId: 'pChat-rooms' };
+	const config = { appId: 'FunnyCat-rooms' };
 	let room = joinRoom(config, $roomID);
 
 	const [sendProfile, getProfile] = room.makeAction('profile');
@@ -66,11 +66,12 @@
 			timestamp: `${date.toTimeString().slice(0, 8)}`
 		};
 		pushMessageToMessageLog(newMessage);
-		selfJoined = false;
 		$peerList = $peerList.filter((peer) => peer.id != leaver?.id);
-		// if (peerCount === 0) {
-		// 	room.leave();
-		// }
+		selfJoined = false;
+
+		if ($peerList.length <= 1) {
+			room.leave();
+		}
 	});
 
 	getMessage((data, peerId) => {
@@ -83,17 +84,24 @@
 		// $peerList = [...$peerList, otherProfile];
 		$peerList.push(otherProfile);
 		$peerList = $peerList;
-		if (otherProfile.joined > profile.joined) {
-			const date = new Date();
-			let newMessage: Message = {
-				type: 'status-joined',
-				id: date.toISOString(),
-				sender: otherProfile.name,
-				content: `${otherProfile.name} joined the room`,
-				timestamp: `${date.toTimeString().slice(0, 8)}`
-			};
-			pushMessageToMessageLog(newMessage);
-		}
+
+		const date = new Date();
+		let newMessage: Message = {
+			type: 'status-joined',
+			id: date.toISOString(),
+			sender: otherProfile.name,
+			content: `${otherProfile.name} joined the room`,
+			timestamp: `${date.toTimeString().slice(0, 8)}`
+		};
+		let newMessage1: Message = {
+			type: 'status-joined',
+			id: date.toISOString(),
+			sender: profile.name,
+			content: `${profile.name} joined the room`,
+			timestamp: `${date.toTimeString().slice(0, 8)}`
+		};
+		pushMessageToMessageLog(newMessage);
+		pushMessageToMessageLog(newMessage1);
 	});
 
 	const pushMessageToMessageLog = (newMessage: Message) => {

@@ -6,11 +6,7 @@
 	import { firebaseConfig } from '../lib/stores/firebaseConfig.js';
 	// import type { User } from '../types/types';
 	import { drawerStore, modalStore } from '@skeletonlabs/skeleton';
-	import {
-		roomID,
-		peerList,
-		userUid
-	} from '$lib/stores/userStore';
+	import { roomID, peerList, userUid } from '$lib/stores/userStore';
 	import type { Profile } from '../types/types';
 	import { onMount } from 'svelte';
 
@@ -27,27 +23,27 @@
 	let _peerList: Profile[] = [];
 	let otherUserId = null;
 	$: _peerList = $peerList;
-
+	const roomId = $roomID.replace('/chat/', '');
 	// 初始化 Firebase
 	const app = initializeApp(firebaseConfig);
 	const auth = getAuth(app);
 	const database = getDatabase(app);
 
 	onMount(async () => {
-		if ($roomID) {
-			const chatRoomRef = ref(database, 'chatRooms/' + $roomID);
+		if (roomId) {
+			const chatRoomRef = ref(database, 'chatRooms/' + roomId);
 			onValue(
 				chatRoomRef,
 				(snapshot) => {
 					const chatRoomData = snapshot.val();
 					console.log('Chat room data:', chatRoomData); // 添加日志记录以审查数据
 					if (chatRoomData && chatRoomData.user1 && chatRoomData.user2) {
-						console.log('User1 ID:', chatRoomData.user1.id);
-						console.log('User2 ID:', chatRoomData.user2.id);
-						console.log('Current User UID:', $userUid);
+						// console.log('User1 ID:', chatRoomData.user1.id);
+						// console.log('User2 ID:', chatRoomData.user2.id);
+						// console.log('Current User UID:', $userUid);
 						otherUserId =
 							chatRoomData.user1.id === $userUid ? chatRoomData.user2.id : chatRoomData.user1.id;
-						console.log('Other User ID:', otherUserId);
+						// console.log('Other User ID:', otherUserId);
 						fetchOtherUserData(otherUserId);
 					} else {
 						console.error('Invalid chat room data');
@@ -63,14 +59,14 @@
 	});
 
 	async function fetchOtherUserData(userId: string) {
-		console.log('Fetching user data for ID:', userId);
+		// console.log('Fetching user data for ID:', userId);
 		const publicProfileRef = ref(database, 'users/' + userId + '/publicProfile');
 		onValue(
 			publicProfileRef,
 			(snapshot) => {
 				if (snapshot.exists()) {
 					const data = snapshot.val();
-					console.log('User data:', data);
+					// console.log('User data:', data);
 					otherUserProfile = {
 						quote: data.quote,
 						major: data.major,
@@ -104,7 +100,7 @@
 </script>
 
 <section class="">
-	<div class="bg-surface-800">
+	<div class="bg-surface-900">
 		<div
 			class="border-grey flex w-full flex-col items-center justify-between p-4 text-center text-2xl"
 		>
@@ -134,35 +130,56 @@
 			<ul
 				class="bg-surface-900 bottom-1 flex h-[20rem] w-full flex-col gap-2 overflow-y-auto rounded-lg py-2 md:h-[30rem] md:gap-3 md:py-3"
 			>
-				<li
-					class="bg-surface-600 mx-2 flex h-12 w-full shrink-0 flex-col justify-center rounded-lg px-2 text-sm md:h-14 md:px-3 md:text-base"
-				>
-					{#if otherUserProfile}
+				{#if otherUserProfile}
+					<h3 class="m-auto ml-2 md:ml-4 pl-2">我的話：</h3>
+					<li
+						class="bg-surface-600 mx-2 flex h-12 w-8/9  shrink-0 flex-col justify-center rounded-lg px-2 text-sm md:h-14 md:px-3 md:text-base"
+					>
 						<div class="flex w-fit flex-col justify-center">
-							<h3 class="m-auto ml-2 md:ml-4">自我介紹：</h3>
-							<p class="m-auto ml-2 md:ml-4">{otherUserProfile.quote}</p>
+							<p class="m-auto ml-2 md:ml-4 mt-1 mb-1">{otherUserProfile.quote}</p>
 						</div>
+					</li>
+					<h3 class="m-auto ml-2 md:ml-4 pl-2">系所：</h3>
+					<li
+						class="bg-surface-600 mx-2 flex h-12 w-8/9 shrink-0 flex-col justify-center rounded-lg px-2 text-sm md:h-14 md:px-3 md:text-base"
+					>
 						<div class="flex w-fit flex-col justify-center">
-							<h3 class="m-auto ml-2 md:ml-4">系所：</h3>
-							<p class="m-auto ml-2 md:ml-4">{otherUserProfile.major}</p>
+							<p class="m-auto ml-2 md:ml-4 mt-1 mb-1">{otherUserProfile.major}</p>
 						</div>
+					</li>
+					<h3 class="m-auto ml-2 md:ml-4 pl-2">年級：</h3>
+					<li
+						class="bg-surface-600 mx-2 flex h-12 w-8/9  shrink-0 flex-col justify-center rounded-lg px-2 text-sm md:h-14 md:px-3 md:text-base"
+					>
 						<div class="flex w-fit flex-col justify-center">
-							<h3 class="m-auto ml-2 md:ml-4">年級：</h3>
-							<p class="m-auto ml-2 md:ml-4">{otherUserProfile.grade}</p>
+							<p class="m-auto ml-2 md:ml-4 mt-1 mb-1">{otherUserProfile.grade}</p>
 						</div>
+					</li>
+					<h3 class="m-auto ml-2 md:ml-4 pl-2">性別：</h3>
+					<li
+						class="bg-surface-600 mx-2 flex h-12 w-8/9  shrink-0 flex-col justify-center rounded-lg px-2 text-sm md:h-14 md:px-3 md:text-base"
+					>
 						<div class="flex w-fit flex-col justify-center">
-							<h3 class="m-auto ml-2 md:ml-4">性別：</h3>
-							<p class="m-auto ml-2 md:ml-4">{otherUserProfile.mySex}</p>
+							<p class="m-auto ml-2 md:ml-4 mt-1 mb-1">{otherUserProfile.mySex}</p>
 						</div>
+					</li>
+					<h3 class="m-auto ml-2 md:ml-4 pl-2">今晚我想來點：</h3>
+					<li
+						class="bg-surface-600 mx-2 flex h-12 w-8/9  shrink-0 flex-col justify-center rounded-lg px-2 text-sm md:h-14 md:px-3 md:text-base"
+					>
 						<div class="flex w-fit flex-col justify-center">
-							<p class="m-auto ml-2 md:ml-4">{otherUserProfile.tonight}</p>
+							<p class="m-auto ml-2 md:ml-4 mt-1 mb-1">{otherUserProfile.tonight}</p>
 						</div>
-					{:else}
+					</li>
+				{:else}
+					<li
+						class="bg-surface-600 mx-2 flex h-12 w-8/9  shrink-0 flex-col justify-center rounded-lg px-2 text-sm md:h-14 md:px-3 md:text-base"
+					>
 						<div class="flex w-fit justify-center">
-							<p class="m-auto ml-2 md:ml-4">用戶資料正在加載...</p>
+							<p class="m-auto ml-2 md:ml-4 mt-1 mb-1 pl-2">用戶資料正在加載...</p>
 						</div>
-					{/if}
-				</li>
+					</li>
+				{/if}
 			</ul>
 		</div>
 	</div>

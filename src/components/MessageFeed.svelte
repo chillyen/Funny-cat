@@ -2,7 +2,21 @@
 	import type { Message } from '../types/types';
 	import MessageBubbleOther from './MessageBubbles/MessageBubbleOther.svelte';
 	import MessageBubbleSender from './MessageBubbles/MessageBubbleSender.svelte';
-	import { nickname, roomDeleted, chatMode, leaveMode, peerList } from '$lib/stores/userStore';
+	import {
+		nickname,
+		roomDeleted,
+		chatMode,
+		leaveMode,
+		peerList,
+		NavState,
+		otherLeave,
+		userUid,
+		roomID
+	} from '$lib/stores/userStore';
+	import { firebaseConfig } from '../lib/stores/firebaseConfig.js';
+	import { getDatabase, ref, update, remove, get, set, onValue } from 'firebase/database';
+	import { initializeApp } from 'firebase/app';
+	import { getAuth, type User } from 'firebase/auth';
 	import StatusBubble from './StatusBubble.svelte';
 	import score5 from '../svg/emoji/1.png?url';
 	import score4 from '../svg/emoji/2.png?url';
@@ -11,10 +25,52 @@
 	import score1 from '../svg/emoji/5.png?url';
 	import { goto } from '$app/navigation';
 
-	export let messages: Message[];
+	const app = initializeApp(firebaseConfig);
+	const auth = getAuth(app);
+	const database = getDatabase(app);
+
+	export let messages: Message[] = [];
 	export let leave = false;
+	export let cancelButton = true;
 	let showConfirmExitButton = true;
 	let headerText = '是否離開聊天室 ?';
+
+	interface UserStatus {
+		isActive: boolean;
+	}
+
+	const getTaiwanTime = () => {
+		const now = new Date();
+		const taiwanTimeOffset = 8 * 60; // 台灣時區偏移量（分鐘）
+		const localTimeOffset = now.getTimezoneOffset(); // 本地時區偏移量（分鐘）
+		now.setMinutes(now.getMinutes() - localTimeOffset);
+		return now.toISOString();
+	};
+
+	const updateIsActiveStatus = async (status: boolean) => {
+		const roomId = $roomID.replace('/chat/', '');
+		const currentDateTime = getTaiwanTime();
+		const userRef = ref(database, 'chatRooms/' + roomId + '/status/' + $userUid);
+		const userStart = ref(database, 'chatRooms/' + roomId + '/status/');
+
+		// 先獲取 startTime
+		const snapshot = await get(userStart);
+		if (snapshot.exists()) {
+			const userData = snapshot.val();
+			const startTime = userData.startTime ? new Date(userData.startTime).getTime() : null;
+
+			// 更新 isActive 狀態和 FinishTime
+			await update(userRef, { isActive: status, FinishTime: currentDateTime });
+
+			// 如果有有效的 startTime，計算總時間
+			if (startTime) {
+				const finishTime = new Date(currentDateTime).getTime();
+				const duration = (finishTime - startTime) / 1000; // 秒
+				// 更新使用時間
+				await update(userRef, { duration: duration + 's' });
+			}
+		}
+	};
 
 	const buttonAlert = () => {
 		leave = true;
@@ -29,16 +85,51 @@
 		headerText = '是否離開聊天室 ?';
 	};
 
-	const handleScoreClick = (score: number) => {
+	const handleScoreClick = async (score: number) => {
 		console.log(`Selected score: ${score}`);
-		if(score>0){
+		if (score > 0) {
 			$peerList = [];
+			await updateIsActiveStatus(false);
 			goto('/home');
 			$chatMode = false;
 			$leaveMode = false;
 			$roomDeleted = false;
+			$NavState = true;
+			$otherLeave = true;
 		}
 	};
+
+	const watchRoomStatus = () => {
+		const roomId = $roomID.replace('/chat/', '');
+		const roomStatusRef = ref(database, 'chatRooms/' + roomId + '/status');
+		onValue(roomStatusRef, (snapshot) => {
+			if (snapshot.exists()) {
+				const statuses = snapshot.val() as Record<string, UserStatus>;
+				// 現在您可以安全地使用 statuses，因為 TypeScript 知道它的類型
+				const allInactive = Object.values(statuses).every((status) => !status.isActive);
+				if (allInactive) {
+					console.log("執行退出");
+					headerText = '對方已離開聊天室';
+					$otherLeave = false;
+					$leaveMode = true;
+					cancelButton = false;
+					buttonAlert();
+				}
+			}
+		});
+	};
+
+	// watchRoomStatus();
+
+	// window.onbeforeunload = () => {
+	// 	const userRef = ref(database, 'chatRooms/' + $roomID + '/status/' + $userUid);
+	// 	// 由於 onbeforeunload 不支持異步操作，這裡只能同步執行
+	// 	// 但不保證會在頁面關閉前完成
+	// 	update(userRef, { isActive: false });
+
+	// 	// 返回一個字符串將顯示標準的離開確認對話框
+	// 	return '您確定要離開此頁面嗎？';
+	// };
 </script>
 
 <section class="w-full flex-1 items-center space-y-3 px-4">
@@ -73,11 +164,13 @@
 					on:click={buttonAlert}>確定離開</button
 				>
 			{/if}
-			<button
-				class="btn variant-filled align-center far mt-5 w-3/4 justify-center md:w-1/2"
-				type="submit"
-				on:click={cancel}>取消</button
-			>
+			{#if cancelButton}
+				<button
+					class="btn variant-filled align-center far mt-5 w-3/4 justify-center md:w-1/2"
+					type="submit"
+					on:click={cancel}>取消</button
+				>
+			{/if}
 		</div>
 	{/if}
 
@@ -104,8 +197,8 @@
 	.emoji-button {
 		width: 85px; /* Example size */
 		height: 85px; /* Example size */
-		margin-left:-12px;
-		margin-right:-12px;
+		margin-left: -12px;
+		margin-right: -12px;
 		margin-bottom: -25px;
 	}
 </style>
