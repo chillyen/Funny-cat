@@ -163,7 +163,7 @@
 							<p class="m-auto ml-2 md:ml-4 mt-1 mb-1">{otherUserProfile.mySex}</p>
 						</div>
 					</li>
-					<h3 class="m-auto ml-2 md:ml-4 pl-2">今晚我想來點：</h3>
+					<h3 class="m-auto ml-2 md:ml-4 pl-2">今晚我想來點💫：</h3>
 					<li
 						class="bg-surface-600 mx-2 flex h-12 w-8/9  shrink-0 flex-col justify-center rounded-lg px-2 text-sm md:h-14 md:px-3 md:text-base"
 					>
