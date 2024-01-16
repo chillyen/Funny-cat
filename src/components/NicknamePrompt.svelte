@@ -25,6 +25,7 @@
 	const database = getDatabase(app);
 	$otherLeave = false;
 	$isLoading = false;
+	$chatMode = false;
 	const dontCare: string = '不拘';
 
 	export let toJoinRoom: boolean = false;

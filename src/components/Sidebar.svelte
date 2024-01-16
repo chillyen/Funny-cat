@@ -6,7 +6,7 @@
 	import { firebaseConfig } from '../lib/stores/firebaseConfig.js';
 	// import type { User } from '../types/types';
 	import { drawerStore, modalStore } from '@skeletonlabs/skeleton';
-	import { roomID, peerList, userUid } from '$lib/stores/userStore';
+	import { roomID, peerList, userUid, otherLeave } from '$lib/stores/userStore';
 	import type { Profile } from '../types/types';
 	import { onMount } from 'svelte';
 
@@ -125,13 +125,13 @@
 	</div>
 
 	<div class="flex flex-col">
-		<h1 class="px-6 pb-1 pt-4 text-lg">自我介紹：</h1>
+		<h1 class="px-6 pb-1 pt-4 text-lg">自我介紹🪪：</h1>
 		<div class="px-6">
 			<ul
 				class="bg-surface-900 bottom-1 flex h-[20rem] w-full flex-col gap-2 overflow-y-auto rounded-lg py-2 md:h-[30rem] md:gap-3 md:py-3"
 			>
 				{#if otherUserProfile}
-					<h3 class="m-auto ml-2 md:ml-4 pl-2">我的話：</h3>
+					<h3 class="m-auto ml-2 md:ml-4 pl-2">我的話💬：</h3>
 					<li
 						class="bg-surface-600 mx-2 flex h-12 w-8/9  shrink-0 flex-col justify-center rounded-lg px-2 text-sm md:h-14 md:px-3 md:text-base"
 					>
@@ -139,7 +139,7 @@
 							<p class="m-auto ml-2 md:ml-4 mt-1 mb-1">{otherUserProfile.quote}</p>
 						</div>
 					</li>
-					<h3 class="m-auto ml-2 md:ml-4 pl-2">系所：</h3>
+					<h3 class="m-auto ml-2 md:ml-4 pl-2">系級🎓：</h3>
 					<li
 						class="bg-surface-600 mx-2 flex h-12 w-8/9 shrink-0 flex-col justify-center rounded-lg px-2 text-sm md:h-14 md:px-3 md:text-base"
 					>
@@ -147,7 +147,7 @@
 							<p class="m-auto ml-2 md:ml-4 mt-1 mb-1">{otherUserProfile.major}</p>
 						</div>
 					</li>
-					<h3 class="m-auto ml-2 md:ml-4 pl-2">年級：</h3>
+					<h3 class="m-auto ml-2 md:ml-4 pl-2">政大生🏷️：</h3>
 					<li
 						class="bg-surface-600 mx-2 flex h-12 w-8/9  shrink-0 flex-col justify-center rounded-lg px-2 text-sm md:h-14 md:px-3 md:text-base"
 					>
@@ -155,7 +155,7 @@
 							<p class="m-auto ml-2 md:ml-4 mt-1 mb-1">{otherUserProfile.grade}</p>
 						</div>
 					</li>
-					<h3 class="m-auto ml-2 md:ml-4 pl-2">性別：</h3>
+					<h3 class="m-auto ml-2 md:ml-4 pl-2">性別♂️|♀️：</h3>
 					<li
 						class="bg-surface-600 mx-2 flex h-12 w-8/9  shrink-0 flex-col justify-center rounded-lg px-2 text-sm md:h-14 md:px-3 md:text-base"
 					>
@@ -176,7 +176,7 @@
 						class="bg-surface-600 mx-2 flex h-12 w-8/9  shrink-0 flex-col justify-center rounded-lg px-2 text-sm md:h-14 md:px-3 md:text-base"
 					>
 						<div class="flex w-fit justify-center">
-							<p class="m-auto ml-2 md:ml-4 mt-1 mb-1 pl-2">用戶資料正在加載...</p>
+							<p class="m-auto ml-2 md:ml-4 mt-1 mb-1 pl-2">用戶已離開</p>
 						</div>
 					</li>
 				{/if}

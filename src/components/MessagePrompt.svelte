@@ -11,6 +11,8 @@
 	let currentMessage: string = '';
 	let textAreaRef: HTMLElement;
 	let isComposing = false;
+	$roomDeleted = false;
+	$leaveMode = false;
 
 	const sendMessage = () => {
 		if (currentMessage != '') {

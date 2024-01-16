@@ -24,6 +24,7 @@
 	import score2 from '../svg/emoji/4.png?url';
 	import score1 from '../svg/emoji/5.png?url';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	const app = initializeApp(firebaseConfig);
 	const auth = getAuth(app);
@@ -33,11 +34,17 @@
 	export let leave = false;
 	export let cancelButton = true;
 	let showConfirmExitButton = true;
-	let headerText = '是否離開聊天室 ?';
+	let headerText = '離開聊天室 ?';
+	$otherLeave = true;
 
 	interface UserStatus {
 		isActive: boolean;
 	}
+
+	onMount(() => {
+		console.log("開始偵測");
+		setTimeout(watchRoomStatus, 3000); 
+	});
 
 	const getTaiwanTime = () => {
 		const now = new Date();
@@ -104,14 +111,21 @@
 		const roomStatusRef = ref(database, 'chatRooms/' + roomId + '/status');
 		onValue(roomStatusRef, (snapshot) => {
 			if (snapshot.exists()) {
-				const statuses = snapshot.val() as Record<string, UserStatus>;
-				// 現在您可以安全地使用 statuses，因為 TypeScript 知道它的類型
-				const allInactive = Object.values(statuses).every((status) => !status.isActive);
+			const roomData = snapshot.val();
+            const userStatuses =  Object.entries(roomData).filter(([key, _]) => key !== 'startTime');
+            // Check isActive for each user status, ignoring the uid
+			// 使用 `.some` 方法檢查是否有任何使用者不活躍
+			const allInactive = userStatuses.some(([_, userData]) => {
+                const user = userData as UserStatus;
+                return !user.isActive;
+            });
 				if (allInactive) {
 					console.log("執行退出");
 					headerText = '對方已離開聊天室';
 					$otherLeave = false;
 					$leaveMode = true;
+					$roomDeleted = true;
+					$chatMode = false;
 					cancelButton = false;
 					buttonAlert();
 				}
@@ -132,14 +146,14 @@
 	// };
 </script>
 
-<section class="w-full flex-1 items-center space-y-3 px-4">
+<section class="w-full flex-1 items-center space-y-1 px-4">
 	{#if $leaveMode}
 		<div class="card flex flex-col items-center justify-center">
 			<header class="card-header text-3xl">
 				<h1>{headerText}</h1>
 			</header>
 			{#if leave}
-				<section class="row flex p-4">
+				<section class="row flex p-4 mb-3">
 					<button class="emoji-button" on:click={() => handleScoreClick(1)}>
 						<img src={score1} alt="emoji 1" />
 					</button>
@@ -156,6 +170,9 @@
 						<img src={score5} alt="emoji 5" />
 					</button>
 				</section>
+				{#if !$otherLeave}
+				<span class="mb-2 flex items-center text-2xl">【對方已離開👋】</span>
+				{/if}
 			{/if}
 			{#if showConfirmExitButton}
 				<button

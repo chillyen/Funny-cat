@@ -13,6 +13,9 @@
 	const auth = getAuth(app);
 	const database = getDatabase(app);
 
+	let isDirty = false; // 用來跟蹤是否有未保存的更改
+
+
 	onMount(() => {
 		if (auth.currentUser) {
 			fetchUserData(auth.currentUser.uid);
@@ -21,7 +24,20 @@
 			alert('用戶未登錄');
 			goto('/');
 		}
+		document.querySelectorAll('.input').forEach(input => {
+            input.addEventListener('input', () => {
+                isDirty = true;
+            });
+        });
 	});
+
+	// 在用戶嘗試離開頁面時顯示警告
+    window.addEventListener('beforeunload', (event) => {
+        if (isDirty) {
+            event.preventDefault(); // 阻止預設行為
+            event.returnValue = ''; // 顯示標準警告
+        }
+    });
 
 	async function fetchUserData(userId: string) {
 		const userRef = ref(database, 'users/' + userId);
@@ -55,6 +71,7 @@
 		try {
 			await update(ref(database, 'users/' + userUidValue + '/publicProfile'), publicProfileData);
 			alert('修改成功');
+			isDirty = false;
 		} catch (error) {
 			console.error('更新数据时发生错误:', error);
 		}
@@ -69,8 +86,8 @@
 	</div>
 
 	<label class="label w-1/8 h-20 md:w-1/2">
-		<span class=" flex items-center pl-2">關於我🤙：</span>
-		<input class="input h-10 w-full p-4" type="text" bind:value={$quote} />
+		<span class=" flex items-center pl-2">關於我🤙【20字內】：</span>
+		<input class="input h-10 w-full p-4" type="text" bind:value={$quote} maxlength="20" />
 	</label>
 
 	<label class="label w-1/8 h-20 md:w-1/2">
@@ -84,7 +101,7 @@
 	</label>
 
 	<label class="label w-1/8 h-20 md:w-1/2">
-		<span class=" flex items-center pl-2">系級🎓：</span>
+		<span class=" flex items-center pl-2">政大系級🎓：</span>
 		<input class="input h-10 w-full p-4" type="text" bind:value={$major} />
 	</label>
 
@@ -103,14 +120,14 @@
 		<div class="card card-quote flex">
 			<div class="quote-text flex">
 				<select class="input input-width ml-1 h-10 w-full" bind:value={$grade}>
-					<option value="bachelor">大學 🏫</option>
-					<option value="master">碩班 🏛️</option>
-					<option value="phd">博士 🏟️</option>
+					<option value="大學 🏫">大學 🏫</option>
+					<option value="碩士 🏛️">碩士 🏛️</option>
+					<option value="博士 🏟️">博士 🏟️</option>
 				</select>
 				<select class="input input-width ml-1 h-10 w-full" bind:value={$tonight}>
-					<option value="bad">單身可壞壞 😈</option>
-					<option value="couple">死會不缺愛 💔</option>
-					<option value="chat">單身可 +賴 💬</option>
+					<option value="單身可壞壞 😈">單身可壞壞 😈</option>
+					<option value="死會不缺愛 💔">死會不缺愛 💔</option>
+					<option value="單身可 +賴 💬">單身可 +賴 💬</option>
 				</select>
 			</div>
 		</div>
