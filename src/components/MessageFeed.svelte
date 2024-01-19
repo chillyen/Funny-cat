@@ -11,7 +11,8 @@
 		NavState,
 		otherLeave,
 		userUid,
-		roomID
+		roomID,
+		peerConnection
 	} from '$lib/stores/userStore';
 	import { firebaseConfig } from '../lib/stores/firebaseConfig.js';
 	import { getDatabase, ref, update, remove, get, set, onValue } from 'firebase/database';
@@ -36,6 +37,7 @@
 	let showConfirmExitButton = true;
 	let headerText = '離開聊天室 ?';
 	$otherLeave = true;
+	$peerConnection = false;
 
 	interface UserStatus {
 		isActive: boolean;
@@ -103,6 +105,7 @@
 			$roomDeleted = false;
 			$NavState = true;
 			$otherLeave = true;
+			$peerConnection = true;
 		}
 	};
 

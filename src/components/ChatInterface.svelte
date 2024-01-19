@@ -8,6 +8,7 @@
 		nickname,
 		roomID,
 		otherLeave,
+		peerConnection,
 		peerList,
 		joinVoiceChat,
 		exitVoiceChat,
@@ -23,8 +24,9 @@
 	let messages: Message[] = [];
 
 	$roomID = $page.url.pathname;
-
+	$peerConnection = false;
 	console.log('chat begins');
+	console.log($peerConnection);
 
 	const config = {
 		iceServers: [
@@ -69,24 +71,24 @@
 		}
 	});
 
-	room.onPeerLeave((peerId) => {
-		let leaver = $peerList.find((peer) => peer.id === peerId);
-		const date = new Date();
-		let newMessage: Message = {
-			type: 'status-left',
-			id: date.toISOString(),
-			sender: $nickname,
-			content: `${leaver?.name} left the room`,
-			timestamp: `${date.toTimeString().slice(0, 8)}`
-		};
-		pushMessageToMessageLog(newMessage);
-		$peerList = $peerList.filter((peer) => peer.id != leaver?.id);
-		selfJoined = false;
-
-		if ($peerList.length <= 1) {
-			room.leave();
-		}
-	});
+	if ($peerConnection) {
+		room.leave();
+		console.log($peerConnection);
+		room.onPeerLeave((peerId) => {
+			let leaver = $peerList.find((peer) => peer.id === peerId);
+			const date = new Date();
+			let newMessage: Message = {
+				type: 'status-left',
+				id: date.toISOString(),
+				sender: $nickname,
+				content: `${leaver?.name} left the room`,
+				timestamp: `${date.toTimeString().slice(0, 8)}`
+			};
+			pushMessageToMessageLog(newMessage);
+			$peerList = $peerList.filter((peer) => peer.id != leaver?.id);
+			selfJoined = false;
+		});
+	}
 
 	getMessage((data, peerId) => {
 		let recievedMessage = data as Message;

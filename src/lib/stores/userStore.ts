@@ -5,6 +5,7 @@ export const currentComponent:Writable<string> = writable('');
 export const isNavVisible:Writable<boolean> = writable(true);
 export const NavState:Writable<boolean> = writable(true);
 export const otherLeave:Writable<boolean> = writable(true);
+export const peerConnection:Writable<boolean> = writable(false);
 export const email:Writable<string> = writable('');
 export const tonight:Writable<string> = writable('');
 export const grade:Writable<string> = writable('');
