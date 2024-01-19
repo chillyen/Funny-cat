@@ -5,7 +5,6 @@
 	import { goto } from '$app/navigation';
 	
 	let showChatInterface: boolean = $nickname !== '';
-	let showPass:boolean = $userUid ! =='';
 	let messageScrollNode: HTMLElement;
 	// const toggleChatInterface = () => {
 	// 	showChatInterface = true;

@@ -26,7 +26,21 @@
 
 	console.log('chat begins');
 
-	const config = { appId: 'FunnyCat-rooms' };
+	const config = {
+		iceServers: [
+			{
+				urls: 'stun:stun-chillyen.ddns.net' // STUN server
+			},
+			{
+				urls: 'turn:turn-chillyen.ddns.net', // TURN server
+				username: 'guest',
+				credential: 'somepassword'
+			}
+		],
+		appId: 'FunnyCat-rooms'
+	};
+
+	// const config = { appId: 'FunnyCat-rooms' };
 	let room = joinRoom(config, $roomID);
 
 	const [sendProfile, getProfile] = room.makeAction('profile');
