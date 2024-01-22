@@ -26,6 +26,24 @@
 	import score1 from '../svg/emoji/5.png?url';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import { joinRoom } from 'trystero';
+
+	// const config = {
+	// 	iceServers: [
+	// 		{
+	// 			urls: 'stun:stun-chillyen.ddns.net' // STUN server
+	// 		},
+	// 		{
+	// 			urls: 'turn:turn-chillyen.ddns.net', // TURN server
+	// 			username: 'guest',
+	// 			credential: 'somepassword'
+	// 		}
+	// 	],
+	// 	appId: 'FunnyCat-rooms'
+	// };
+
+	// const config = { appId: 'FunnyCat-rooms' };
+	// let room = joinRoom(config, $roomID);
 
 	const app = initializeApp(firebaseConfig);
 	const auth = getAuth(app);
@@ -44,8 +62,8 @@
 	}
 
 	onMount(() => {
-		console.log("開始偵測");
-		setTimeout(watchRoomStatus, 3000); 
+		console.log('開始偵測');
+		setTimeout(watchRoomStatus, 3000);
 	});
 
 	const getTaiwanTime = () => {
@@ -106,6 +124,12 @@
 			$NavState = true;
 			$otherLeave = true;
 			$peerConnection = true;
+			// if ($peerConnection) {
+			// 	room.leave();
+			// 	console.log($peerConnection);
+			// 	console.log('執行peerconnection 斷線');
+			// 	$peerConnection = false;
+			// }
 		}
 	};
 
@@ -114,16 +138,16 @@
 		const roomStatusRef = ref(database, 'chatRooms/' + roomId + '/status');
 		onValue(roomStatusRef, (snapshot) => {
 			if (snapshot.exists()) {
-			const roomData = snapshot.val();
-            const userStatuses =  Object.entries(roomData).filter(([key, _]) => key !== 'startTime');
-            // Check isActive for each user status, ignoring the uid
-			// 使用 `.some` 方法檢查是否有任何使用者不活躍
-			const allInactive = userStatuses.some(([_, userData]) => {
-                const user = userData as UserStatus;
-                return !user.isActive;
-            });
+				const roomData = snapshot.val();
+				const userStatuses = Object.entries(roomData).filter(([key, _]) => key !== 'startTime');
+				// Check isActive for each user status, ignoring the uid
+				// 使用 `.some` 方法檢查是否有任何使用者不活躍
+				const allInactive = userStatuses.some(([_, userData]) => {
+					const user = userData as UserStatus;
+					return !user.isActive;
+				});
 				if (allInactive) {
-					console.log("執行退出");
+					console.log('執行退出');
 					headerText = '對方已離開聊天室';
 					$otherLeave = false;
 					$leaveMode = true;
@@ -156,7 +180,7 @@
 				<h1>{headerText}</h1>
 			</header>
 			{#if leave}
-				<section class="row flex p-4 mb-3">
+				<section class="row mb-3 flex p-4">
 					<button class="emoji-button" on:click={() => handleScoreClick(1)}>
 						<img src={score1} alt="emoji 1" />
 					</button>
@@ -174,7 +198,7 @@
 					</button>
 				</section>
 				{#if !$otherLeave}
-				<span class="mb-2 flex items-center text-2xl">【對方已離開👋】</span>
+					<span class="mb-2 flex items-center text-2xl">【對方已離開👋】</span>
 				{/if}
 			{/if}
 			{#if showConfirmExitButton}

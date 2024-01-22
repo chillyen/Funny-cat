@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Message, PageData, Profile } from '../types/types';
-	import { joinRoom, selfId } from 'trystero';
+	import { joinRoom, selfId, } from 'trystero';
 	import { afterUpdate } from 'svelte';
 	import MessageFeed from './MessageFeed.svelte';
 	import MessagePrompt from './MessagePrompt.svelte';
@@ -24,14 +24,13 @@
 	let messages: Message[] = [];
 
 	$roomID = $page.url.pathname;
-	$peerConnection = false;
 	console.log('chat begins');
 	console.log($peerConnection);
 
 	const config = {
 		iceServers: [
 			{
-				urls: 'stun:stun-chillyen.ddns.net' // STUN server
+				urls: 'stun:stun-chillyen.ddns.net:3478' // STUN server
 			},
 			{
 				urls: 'turn:turn-chillyen.ddns.net', // TURN server
@@ -53,17 +52,21 @@
 	let selfJoined = false;
 	let peerCount = 0;
 
+
 	const profile: Profile = {
 		id: selfId,
 		name: $nickname,
 		joined: Date.now()
 	};
 
+
 	room.onPeerJoin((peerId) => {
-		if (peerCount < 2) {
+		if (peerCount < 3) {
 			sendProfile(profile, peerId);
 			selfJoined = true;
 			peerCount++;
+			console.log('加入房間');
+			console.log(room);
 		} else {
 			sendMessage({ type: 'room-full', content: 'This room is full.' });
 			room.leave();
@@ -71,24 +74,28 @@
 		}
 	});
 
-	if ($peerConnection) {
-		room.leave();
-		console.log($peerConnection);
-		room.onPeerLeave((peerId) => {
-			let leaver = $peerList.find((peer) => peer.id === peerId);
-			const date = new Date();
-			let newMessage: Message = {
-				type: 'status-left',
-				id: date.toISOString(),
-				sender: $nickname,
-				content: `${leaver?.name} left the room`,
-				timestamp: `${date.toTimeString().slice(0, 8)}`
-			};
-			pushMessageToMessageLog(newMessage);
-			$peerList = $peerList.filter((peer) => peer.id != leaver?.id);
-			selfJoined = false;
-		});
-	}
+	// if ($peerConnection) {
+	// 	room.leave();
+	// 	console.log($peerConnection);
+	// 	console.log('執行peerconnection 斷線');
+	// }
+
+	room.onPeerLeave((peerId) => {
+		let leaver = $peerList.find((peer) => peer.id === peerId);
+		const date = new Date();
+		let newMessage: Message = {
+			type: 'status-left',
+			id: date.toISOString(),
+			sender: $nickname,
+			content: `${leaver?.name} left the room`,
+			timestamp: `${date.toTimeString().slice(0, 8)}`
+		};
+		pushMessageToMessageLog(newMessage);
+		$peerList = $peerList.filter((peer) => peer.id != leaver?.id);
+		console.log('Room 退出');
+		selfJoined = false;
+		$peerConnection = false;
+	});
 
 	getMessage((data, peerId) => {
 		let recievedMessage = data as Message;
