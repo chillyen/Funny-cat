@@ -1,18 +1,20 @@
 <script lang="ts">
 	import type { Message, PageData, Profile } from '../types/types';
-	import { joinRoom, selfId, } from 'trystero';
+	import { joinRoom } from 'trystero';
 	import { afterUpdate } from 'svelte';
 	import MessageFeed from './MessageFeed.svelte';
 	import MessagePrompt from './MessagePrompt.svelte';
 	import {
 		nickname,
 		roomID,
+		userUid,
 		otherLeave,
 		peerConnection,
 		peerList,
 		joinVoiceChat,
 		exitVoiceChat,
-		micOn
+		micOn,
+		roomDeleted
 	} from '$lib/stores/userStore';
 	import { page } from '$app/stores';
 
@@ -22,6 +24,7 @@
 
 	let showChatInterface: boolean = $nickname !== '';
 	let messages: Message[] = [];
+	$peerConnection = false;
 
 	$roomID = $page.url.pathname;
 	console.log('chat begins');
@@ -52,25 +55,26 @@
 	let selfJoined = false;
 	let peerCount = 0;
 
-
 	const profile: Profile = {
-		id: selfId,
+		id: $userUid,
 		name: $nickname,
 		joined: Date.now()
 	};
 
-
 	room.onPeerJoin((peerId) => {
-		if (peerCount < 3) {
-			sendProfile(profile, peerId);
-			selfJoined = true;
-			peerCount++;
-			console.log('加入房間');
-			console.log(room);
+		if (peerCount < 2) {
+			sendProfile(profile, peerId)
+				.then(() => {
+					selfJoined = true;
+					peerCount++;
+					console.log('加入房间');
+				})
+				.catch((error) => {
+					console.error('Error sending profile:', error);
+				});
 		} else {
-			sendMessage({ type: 'room-full', content: 'This room is full.' });
+			sendMessage({ type: 'room-full', content: 'This room is full.' }, peerId);
 			room.leave();
-			console.log('more than two people');
 		}
 	});
 
@@ -107,7 +111,8 @@
 		// $peerList = [...$peerList, otherProfile];
 		$peerList.push(otherProfile);
 		$peerList = $peerList;
-
+		// 為了可以在偵測時準確開始聊天
+		// $roomDeleted = false;
 		const date = new Date();
 		let newMessage: Message = {
 			type: 'status-joined',
@@ -142,25 +147,26 @@
 	let selfStream: MediaStream;
 
 	$exitVoiceChat = async () => {
-		room.removeStream(selfStream as MediaStream);
-		selfStream.getTracks().forEach(function (track) {
-			track.stop();
-		});
+		try {
+			room.removeStream(selfStream);
+			selfStream.getTracks().forEach((track) => track.stop());
+		} catch (error) {
+			console.error('Error exiting voice chat:', error);
+		}
 	};
 
 	$joinVoiceChat = async () => {
-		// this object can store audio instances for later
+		try {
+			selfStream = await navigator.mediaDevices.getUserMedia({
+				audio: true,
+				video: false
+			});
 
-		selfStream = await navigator.mediaDevices.getUserMedia({
-			audio: true,
-			video: false
-		});
-
-		// send stream to peers currently in the room
-		room.addStream(selfStream);
-
-		// send stream to peers who join later
-		room.onPeerJoin(async (peerId) => $micOn && room.addStream(selfStream as MediaStream, peerId));
+			room.addStream(selfStream);
+			room.onPeerJoin(async (peerId) => $micOn && room.addStream(selfStream, peerId));
+		} catch (error) {
+			console.error('Error joining voice chat:', error);
+		}
 	};
 
 	// handle streams from other peers

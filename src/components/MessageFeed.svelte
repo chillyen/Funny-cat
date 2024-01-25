@@ -28,22 +28,22 @@
 	import { onMount } from 'svelte';
 	import { joinRoom } from 'trystero';
 
-	// const config = {
-	// 	iceServers: [
-	// 		{
-	// 			urls: 'stun:stun-chillyen.ddns.net' // STUN server
-	// 		},
-	// 		{
-	// 			urls: 'turn:turn-chillyen.ddns.net', // TURN server
-	// 			username: 'guest',
-	// 			credential: 'somepassword'
-	// 		}
-	// 	],
-	// 	appId: 'FunnyCat-rooms'
-	// };
+	const config = {
+		iceServers: [
+			{
+				urls: 'stun:stun-chillyen.ddns.net' // STUN server
+			},
+			{
+				urls: 'turn:turn-chillyen.ddns.net', // TURN server
+				username: 'guest',
+				credential: 'somepassword'
+			}
+		],
+		appId: 'FunnyCat-rooms'
+	};
 
 	// const config = { appId: 'FunnyCat-rooms' };
-	// let room = joinRoom(config, $roomID);
+	let room = joinRoom(config, $roomID);
 
 	const app = initializeApp(firebaseConfig);
 	const auth = getAuth(app);
@@ -124,12 +124,12 @@
 			$NavState = true;
 			$otherLeave = true;
 			$peerConnection = true;
-			// if ($peerConnection) {
-			// 	room.leave();
-			// 	console.log($peerConnection);
-			// 	console.log('執行peerconnection 斷線');
-			// 	$peerConnection = false;
-			// }
+			if ($peerConnection) {
+				room.leave();
+				console.log($peerConnection);
+				console.log('執行peerconnection 斷線:');
+				$peerConnection = false;
+			}
 		}
 	};
 

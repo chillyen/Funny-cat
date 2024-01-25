@@ -1,6 +1,6 @@
 {
 	"name": "pchat",
-	"version": "0.0.1",
+	"version": "0.1.0s",
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
