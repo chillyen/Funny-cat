@@ -31,10 +31,10 @@
 
 	const login = async () => {
 		email = number + '@gmail.com';
-		if (!isValidNccuEmail(email)) {
-			console.error('Please use a valid NCCU email address.');
-			return;
-		}
+		//if (!isValidNccuEmail(email)) {
+		//	console.error('Please use a valid NCCU email address.');
+		//	return;
+		//}
 		try {
 			const userCredential = await signInWithEmailAndPassword(auth, email, password);
 			console.log('Logged in as:', email);
