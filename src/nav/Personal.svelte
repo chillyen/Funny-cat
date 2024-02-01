@@ -15,7 +15,6 @@
 
 	let isDirty = false; // 用來跟蹤是否有未保存的更改
 
-
 	onMount(() => {
 		if (auth.currentUser) {
 			fetchUserData(auth.currentUser.uid);
@@ -24,20 +23,20 @@
 			alert('用戶未登錄');
 			goto('/');
 		}
-		document.querySelectorAll('.input').forEach(input => {
-            input.addEventListener('input', () => {
-                isDirty = true;
-            });
-        });
+		document.querySelectorAll('.input').forEach((input) => {
+			input.addEventListener('input', () => {
+				isDirty = true;
+			});
+		});
 	});
 
 	// 在用戶嘗試離開頁面時顯示警告
-    window.addEventListener('beforeunload', (event) => {
-        if (isDirty) {
-            event.preventDefault(); // 阻止預設行為
-            event.returnValue = ''; // 顯示標準警告
-        }
-    });
+	window.addEventListener('beforeunload', (event) => {
+		if (isDirty) {
+			event.preventDefault(); // 阻止預設行為
+			event.returnValue = ''; // 顯示標準警告
+		}
+	});
 
 	async function fetchUserData(userId: string) {
 		const userRef = ref(database, 'users/' + userId);
@@ -85,28 +84,30 @@
 		</header>
 	</div>
 
-	<label class="label w-1/8 h-20 md:w-1/2">
+	
+
+	<label class="label h-20">
 		<span class=" flex items-center pl-2">關於我🤙【20字內】：</span>
 		<input class="input h-10 w-full p-4" type="text" bind:value={$quote} maxlength="20" />
 	</label>
 
-	<label class="label w-1/8 h-20 md:w-1/2">
+	<label class="label h-20">
 		<span class=" flex items-center pl-2">個人ID🪪：</span>
 		<input class="input h-10 w-full p-4" type="text" bind:value={$userUid} disabled />
 	</label>
 
-	<label class="label w-1/8 h-20 md:w-1/2">
+	<label class="label h-20">
 		<span class=" flex items-center pl-2">Email📧：</span>
 		<input class="input h-10 w-full p-4" type="text" bind:value={$email} disabled />
 	</label>
 
-	<label class="label w-1/8 h-20 md:w-1/2">
+	<label class="label h-20">
 		<span class=" flex items-center pl-2">政大系級🎓：</span>
 		<input class="input h-10 w-full p-4" type="text" bind:value={$major} />
 	</label>
 
-	<label class="label w-1/8 h-20 md:w-1/2">
-		<span class=" flex items-center pl-2">性別♂️|♀️：</span>
+	<label class="labelh-20 flex-col ">
+		<span class=" flex items-center pl-2">生理性別♂️|♀️：</span>
 		<div class="mysex flex items-center">
 			<input type="radio" bind:group={$mySex} value="男" class="mr-2" />
 			<span class="mr-4">男♂️</span>
@@ -132,8 +133,11 @@
 			</div>
 		</div>
 	</section>
-	<section class="flex-1 flex-h items-center justify-center">
-		<button class="btn variant-filled align-center mt-3 w-1/3 justify-center md:w-1/2 mb-5" on:click={editProfile}>
+	<section class="flex-h flex-1 items-center justify-center">
+		<button
+			class="btn variant-filled align-center mb-5 mt-3 w-1/3 justify-center md:w-1/2"
+			on:click={editProfile}
+		>
 			<!-- <img src={edit} alt="Edit" /> -->
 			<span class="text-below-image">儲存✒️</span>
 		</button>

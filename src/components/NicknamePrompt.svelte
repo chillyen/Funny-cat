@@ -308,7 +308,7 @@
 {#if $isLoading}
 	<Loading />
 {:else}
-	<div class="top container mx-auto flex flex-col items-center justify-center">
+	<div class="top container mx-auto flex h-full flex-col items-center justify-center">
 		<label class="label h-20 w-3/4 md:w-1/2">
 			<span>匿名名字🖖【可再編輯】:</span>
 			<input
@@ -343,6 +343,6 @@
 
 <style>
 	.top {
-		margin-top: 48%;
+		margin-top:0%;
 	}
 </style>

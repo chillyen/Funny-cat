@@ -34,7 +34,8 @@
 	const register = async () => {
 		if (
 			!name.trim() ||
-			!email.trim() ||
+			!number.trim() ||
+			!$mySex.trim() ||
 			!password.trim() ||
 			!passwordcorrect.trim() ||
 			!nccuMajor.trim()
@@ -47,7 +48,7 @@
 			return; // 不繼續執行密碼錯誤邏輯
 		}
 		isPasswordIn = false;
-		// email = number + '@nccu.edu.tw';
+		email = number + '@nccu.edu.tw';
 		try {
 			const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 			const user = userCredential.user;
@@ -108,7 +109,7 @@
 			<option value="女">女♀️</option>
 		</select>
 		<span class="mt-3 flex items-center pl-2">政大學號：</span>
-		<input class="input h-10 w-full p-3" type="text" bind:value={email} />
+		<input class="input h-10 w-full p-3" type="text" bind:value={number} />
 		<span class="mt-3 flex items-center pl-2">政大系級：</span>
 		<input class="input h-10 w-full p-3" type="text" bind:value={nccuMajor} />
 		<span class="mt-3 flex items-center pl-2">密碼設置：</span>
