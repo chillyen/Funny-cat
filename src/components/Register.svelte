@@ -48,7 +48,7 @@
 			return; // 不繼續執行密碼錯誤邏輯
 		}
 		isPasswordIn = false;
-		email = number + '@nccu.edu.tw';
+		email = number + '@gmail.com';
 		try {
 			const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 			const user = userCredential.user;
