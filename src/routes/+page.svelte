@@ -30,7 +30,7 @@
 	};
 
 	const login = async () => {
-		email = number + '@nccu.edu.tw';
+		email = number + '@gmail.com';
 		if (!isValidNccuEmail(email)) {
 			console.error('Please use a valid NCCU email address.');
 			return;
