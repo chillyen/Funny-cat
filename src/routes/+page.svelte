@@ -25,9 +25,9 @@
 	const auth = getAuth(app);
 	const database = getDatabase(app);
 
-	const isValidNccuEmail = (email: string): boolean => {
-		return email.endsWith('@nccu.edu.tw');
-	};
+	//const isValidNccuEmail = (email: string): boolean => {
+	//	return email.endsWith('@nccu.edu.tw');
+	//};
 
 	const login = async () => {
 		email = number + '@gmail.com';
